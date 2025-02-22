@@ -1,0 +1,9 @@
+kanji/
+samples/
+*.npz
+vae_checkpoints/
+resnet_vae_checkpoints/
+lightning_logs/
+resnet_vae_samples/
+interpolation.mp4
+resnet_interpolation.mp4
