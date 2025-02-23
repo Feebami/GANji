@@ -26,7 +26,6 @@ from PIL import Image
 import sys
 
 import lightning as L
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from torch.optim import Adam
@@ -35,7 +34,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
 import torchvision
-from torchvision import models
 from torchvision.io import write_video
 from torchvision.transforms import v2
 import tqdm

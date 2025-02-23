@@ -7,3 +7,4 @@ lightning_logs/
 resnet_vae_samples/
 interpolation.mp4
 resnet_interpolation.mp4
+gan_samples/
