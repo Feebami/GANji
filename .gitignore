@@ -1,10 +1,10 @@
+__pycache__/
 kanji/
-samples/
-*.npz
-vae_checkpoints/
-resnet_vae_checkpoints/
-lightning_logs/
-resnet_vae_samples/
-interpolation.mp4
-resnet_interpolation.mp4
-gan_samples/
+vae_conv_dim256_100/
+vae_conv_samples/
+vae_resnet_dim256_100/
+vae_resnet_samples/
+gan_resnet_dim256_layers[512, 256, 128, 64]_300/
+gan_resnet_samples/
+joe.png
+yui.png

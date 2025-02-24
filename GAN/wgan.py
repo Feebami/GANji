@@ -19,7 +19,6 @@ from torchvision.io import write_video
 from torchvision.transforms import v2
 import tqdm
 
-# Set the default tensor type to float32
 torch.set_float32_matmul_precision('high')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -79,6 +78,7 @@ class Generator(nn.Module):
         
     
     def forward(self, x):
+        x += torch.randn_like(x) * 0.1
         x = self.fc(x)
         x = self.unflatten(x)
         for block in self.blocks:
@@ -165,7 +165,7 @@ class GAN(L.LightningModule):
         fake_imgs = self.generator(latent)
         scores = self.discriminator(fake_imgs).squeeze()
 
-        k = int(0.7 * real_imgs.size(0))
+        k = int(0.5 * real_imgs.size(0))
         top_scores = torch.topk(scores, k, sorted=False)[0]
 
         g_loss = -top_scores.mean()
@@ -202,12 +202,12 @@ class GAN(L.LightningModule):
 
 # Hyperparameters
 latent_dim = 512
-g_layers = [256, 128]  
-d_layers = [128, 256]
-lr = 1e-4
+g_layers = [512, 256, 128]  
+d_layers = [128, 256, 512]
+lr = 5e-5
 sample_every = 10
 epochs = 501
-batch_size = 128
+batch_size = 64
 img_channels = data[0].shape[0]
 
 # Data loader
