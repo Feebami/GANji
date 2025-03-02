@@ -1,0 +1,226 @@
+exp 1:
+    hps:
+        batch_size: 64
+        epochs: 200
+        latent_dim: 128
+        lr: 2e-4
+        model: conv
+        loss: hinge
+        disc_ratio: 3
+        gp: 10
+        layers: 256,128,64
+        data: mnist
+    time/epoch: ~25s
+    results:
+        The images at the end were of a granular pattern, but better than with BCE loss. Final g_loss was 1.07, d_loss was 6.9e-5. The trials today without spectral_norm seem to be doing about the same if not better.
+exp 2:
+    hps:
+        batch_size: 128
+        epochs: 500
+        latent_dim: 128
+        lr: 2e-4
+        model: conv
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128
+        data: mnist
+    time/epoch: ~1m5s
+    results:
+        g_loss:2.05, d_loss:3.14e-5
+        I think it did better I stopped training at 475 epochs so I could shut down before bed. I'll put a sample image in a gan_exp_results folder. I think a faster learning rate might be better. In order to run more experiments I might lower the epochs or find some way to speed up training.
+exp 3:
+    hps:
+        batch_size: 128
+        epochs: 500
+        latent_dim: 128
+        lr: 4e-4
+        model: conv
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128
+        data: mnist
+    other: removed RandomHorizontalFlip
+    time/epoch: ~1m5s
+    results:
+        g_loss: 2.36, d_loss: 0.00322
+        Samples seem to be more eratic than before, but not necessarily worse. Still not good. Stopped at 300 epochs. I want to run another experiment today and at 300 results weren't good enough to justify continuing.
+exp 4:
+    hps:
+        batch_size: 128
+        epochs: 500
+        latent_dim: 128
+        lr: 3e-4
+        model: conv
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128
+        data: mnist
+    other: removing bf16-mixed precision and removing learning rate scheduler
+    time/epoch: ~2m15s
+    results:
+        g_loss: 1.17, d_loss: 0.318
+        I stopped it at 9 epochs because, good news, something I changed made things drastically better. Good results on the first epoch. I have a feeling it was the scheduler. I've changed the precision before with no effect, but this is the first time I removed the scheduler. Now that results are seen faster I can run many more experiments, but first I want to see if I can set the precision back to bf16.
+exp 5:
+    hps:
+        batch_size: 128
+        epochs: 10
+        latent_dim: 128
+        lr: 3e-4
+        model: conv
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128
+        data: mnist
+    other: returning to bf16-mixed precision
+    time/epoch: ~1m5s
+    results:
+        d_loss=0.0637, g_loss=1.450
+        Not good. Maybe it was the precision. Could be a combo of both. Puting it back just to make sure. 
+exp 6:
+    hps:
+        batch_size: 128
+        epochs: 10
+        latent_dim: 128
+        lr: 3e-4
+        model: conv
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128
+        data: mnist
+    other: full precision, no scheduler
+    time/epoch: ~2m15s
+    results:
+        d_loss=0.124, g_loss=1.540
+        Crazy to see number-like shapes after just a couple epochs. The precision was definitely causing problems. Next I'll try putting back the scheduler with low total epochs.
+exp 7:
+    hps:
+        batch_size: 128
+        epochs: 10
+        latent_dim: 128
+        lr: 3e-4
+        model: conv
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128
+        data: mnist
+    other: full precision, scheduler
+    time/epoch: ~2m15s
+    results:
+        d_loss=5.69e-5, g_loss=1.340
+        Stopped at 7 epochs. Not good results. Removing the scheduler going forward. Maybe my implementation is wrong or its not a good schedule. For now, going to move forward with no scheduler. 
+exp 8:
+    hps:
+        batch_size: 128
+        epochs: 10
+        latent_dim: 128
+        lr: 3e-4
+        model: conv
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128
+        data: mnist
+    other: full precision but setting float32 matmul precision to 'medium'
+    time/epoch: ~2m15s
+    results:
+        d_loss=0.203, g_loss=1.180
+        Stopped at 5 epochs. Looks the same as before, but didn't make anything faster. Going back to 'high'. 
+exp 9:
+    hps:
+        batch_size: 128
+        epochs: 100
+        latent_dim: 128
+        lr: 3e-4
+        model: conv
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128
+        data: kanji
+    other: matmul precision 'high', yolo run on the kanji dataset. Last expiriment for today.
+    results:
+        d_loss=0.00195, g_loss=2.850
+        Very sparse images. Not good results. The dataset may be too small and the kanji samples too dissimilar.
+exp 10:
+    hps:
+        batch_size: 128
+        epochs: 10
+        latent_dim: 128
+        lr: 3e-4
+        model: conv
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128
+        data: cifar
+        time/epoch: ~2m
+        results:
+            d_loss=0.391, g_loss=0.808
+            Images look like they have some structure, but I think the colors are getting messed up in my sampling method because I negate the images for the black and white mnist and kanji data. I guess I can deal with the grayscale images being inverted.
+exp 11:
+    hps:
+        batch_size: 128
+        epochs: 10
+        latent_dim: 128
+        lr: 3e-4
+        model: resnet
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128
+        data: cifar
+    other: Resnet code still has spectral_norm. Changed sampling method to not invert colors. Adding back RandomHorizontalFlip.
+    time/epoch: ~14m
+    results:
+        Accidentally closed the window at 4 epochs. Results not great. Going to remove spectral_norm and try again. Also a smaller model.
+exp 12:
+    hps:
+        batch_size: 128
+        epochs: 10
+        latent_dim: 128
+        lr: 3e-4
+        model: resnet
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 256,128,64
+        data: cifar
+    other: removed spectral_norm
+    time/epoch: ~6m
+    results:
+        d_loss=1.610, g_loss=0.134
+        better than before, can't tell what the images are, but cifar is hard pretty pixelated. I think I'll try the fair face dataset next.
+exp 13:
+    hps:
+        batch_size: 128
+        epochs: 10
+        latent_dim: 128
+        lr: 2e-4
+        model: resnet
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128
+        data: kanji
+    time/epoch: ~2m50s
+    results:
+        d_loss=0.00588, g_loss=1.680
+        just mostly black images. sample from epoch 1 was best so that's the one I'll save.
+exp 14:
+    hps:
+        batch_size: 128
+        epochs: 100
+        latent_dim: 128
+        lr: 1e-4
+        model: resnet
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128
+        data: kanji
