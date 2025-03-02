@@ -33,6 +33,7 @@ class KanjiDataset(Dataset):
     def __init__(self, root, transform=None):
         self.root = root
         self.transform = transform
+        self.h_flip = v2.RandomHorizontalFlip()
         self.data = []
         for i, file in tqdm.tqdm(enumerate(os.listdir(root)), desc='Loading images'):
             img = Image.open(os.path.join(root, file))
@@ -46,25 +47,8 @@ class KanjiDataset(Dataset):
         return len(self.data)
     
     def __getitem__(self, idx):
-        return self.data[idx]
+        return self.h_flip(self.data[idx])
     
-# Load the dataset
-transform = v2.Compose([
-    v2.RandomHorizontalFlip(),
-    v2.ToImage(),
-    v2.ToDtype(torch.float32, scale=True),
-])
-
-dataloader = DataLoader(
-    KanjiDataset('kanji', transform=transform),
-    batch_size=args.batch_size,
-    shuffle=True,
-    num_workers=4,
-    persistent_workers=True,
-    prefetch_factor=2,
-    pin_memory=True
-)
-
 class VAE(L.LightningModule):
     def __init__(self):
         super().__init__()
@@ -124,11 +108,28 @@ class VAE(L.LightningModule):
             os.makedirs(f'{args.save_dir}_{args.model}_samples', exist_ok=True)
             img.save(f'{args.save_dir}_{args.model}_samples/sample_{self.current_epoch}.png')
 
-vae = VAE()
-trainer = L.Trainer(
-    max_epochs=args.epochs,
-    precision='bf16-mixed' if device == 'cuda' else 32,
-    default_root_dir=f'{args.save_dir}_{args.model}_dim{args.latent_dim}_{args.epochs}',
-)
+if __name__ == '__main__':
 
-trainer.fit(vae, dataloader)
+    transform = v2.Compose([
+        v2.ToImage(),
+        v2.ToDtype(torch.float32, scale=True),
+    ])
+
+    dataloader = DataLoader(
+        KanjiDataset('kanji', transform=transform),
+        batch_size=args.batch_size,
+        shuffle=True,
+        num_workers=4,
+        persistent_workers=True,
+        prefetch_factor=2,
+        pin_memory=True
+    )
+
+    vae = VAE()
+    trainer = L.Trainer(
+        max_epochs=args.epochs,
+        precision='bf16-mixed' if device == 'cuda' else 32,
+        default_root_dir=f'{args.save_dir}_{args.model}_dim{args.latent_dim}_{args.epochs}',
+    )
+
+    trainer.fit(vae, dataloader)

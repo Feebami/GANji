@@ -2,20 +2,13 @@
 import argparse
 import os
 from PIL import Image
-import sys
 
 import lightning as L
-import matplotlib.pyplot as plt
-import numpy as np
 import torch
 from torch.optim import Adam
-import torch.nn as nn
 import torch.nn.functional as F
-from torch.nn.utils import spectral_norm
 from torch.utils.data import DataLoader, Dataset
 import torchvision
-from torchvision import models
-from torchvision.io import write_video
 from torchvision.transforms import v2
 import tqdm
 
@@ -41,6 +34,7 @@ else:
 
 device  = 'cuda' if torch.cuda.is_available() else 'cpu'
 torch.set_float32_matmul_precision('high')
+img_channels = 3 if args.data in ['fairface', 'cifar'] else 1
 
 # Define the custom dataset class for loading Kanji images
 class Dataset(Dataset):
@@ -61,38 +55,6 @@ class Dataset(Dataset):
     
     def __getitem__(self, idx):
         return self.h_flip(self.data[idx])
-
-img_channels = 3 if args.data in ['fairface', 'cifar'] else 1
-    
-transform = v2.Compose([
-    v2.Resize((64,64)),
-    v2.ToImage(),
-    v2.ToDtype(torch.float32, scale=True),
-    v2.Normalize([0.5]*img_channels, [0.5]*img_channels),
-])
-
-if args.data == 'cifar':
-    print('Using CIFAR-10 dataset')
-    data = torchvision.datasets.CIFAR10('cifar', download=True, transform=transform)
-elif args.data == 'mnist':
-    print('Using MNIST dataset')
-    data = torchvision.datasets.MNIST('mnist', download=True, transform=transform)
-elif args.data == 'fairface':
-    print('Using FairFace dataset')
-    data = Dataset('fairface', transform=transform)
-else:
-    print('Using Kanji dataset')
-    data = Dataset('kanji', transform=transform)
-
-dataloader = DataLoader(
-    data,
-    batch_size=args.batch_size,
-    shuffle=True,
-    num_workers=4,
-    persistent_workers=True,
-    prefetch_factor=2,
-    pin_memory=True
-)
 
 class GAN(L.LightningModule):
     def __init__(self):
@@ -193,11 +155,43 @@ class GAN(L.LightningModule):
             os.makedirs(f'{args.save_dir}_{args.model}_{args.data}_samples', exist_ok=True)
             img.save(f'{args.save_dir}_{args.model}_{args.data}_samples/sample_{self.current_epoch}.png')
 
-gan = GAN()
-trainer = L.Trainer(
-    max_epochs=args.epochs,
-    # precision='bf16-mixed',
-    default_root_dir=f'{args.save_dir}_{args.model}_{args.data}_dim{args.latent_dim}_layers{args.layers}',
-)
+if __name__ == '__main__':
+        
+    transform = v2.Compose([
+        v2.Resize((64,64)),
+        v2.ToImage(),
+        v2.ToDtype(torch.float32, scale=True),
+        v2.Normalize([0.5]*img_channels, [0.5]*img_channels),
+    ])
 
-trainer.fit(gan, dataloader)
+    if args.data == 'cifar':
+        print('Using CIFAR-10 dataset')
+        data = torchvision.datasets.CIFAR10('cifar', download=True, transform=transform)
+    elif args.data == 'mnist':
+        print('Using MNIST dataset')
+        data = torchvision.datasets.MNIST('mnist', download=True, transform=transform)
+    elif args.data == 'fairface':
+        print('Using FairFace dataset')
+        data = Dataset('fairface', transform=transform)
+    else:
+        print('Using Kanji dataset')
+        data = Dataset('kanji', transform=transform)
+
+    dataloader = DataLoader(
+        data,
+        batch_size=args.batch_size,
+        shuffle=True,
+        num_workers=4,
+        persistent_workers=True,
+        prefetch_factor=2,
+        pin_memory=True
+    )
+
+    gan = GAN(img_channels)
+    trainer = L.Trainer(
+        max_epochs=args.epochs,
+        # precision='bf16-mixed',
+        default_root_dir=f'{args.save_dir}_{args.model}_{args.data}_dim{args.latent_dim}_layers{args.layers}',
+    )
+
+    trainer.fit(gan, dataloader)

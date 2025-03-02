@@ -224,3 +224,7 @@ exp 14:
         gp: 10
         layers: 512,256,128
         data: kanji
+    time/epoch: ~2m50s
+    results:
+        d_loss=0.0127, g_loss=3.480
+        the black images turned into kanji after about 25 epochs. After 100 the kanji look pretty good. 
