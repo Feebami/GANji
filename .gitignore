@@ -11,3 +11,5 @@ gan_resnet_samples/
 joe.png
 yui.png
 /gan_resnet_kanji_dim128_layers\[512, 256, 128\]
+/ddpm_logs
+/ddpm_samples
