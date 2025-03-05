@@ -10,7 +10,7 @@ import torchvision
 from torchvision.transforms import v2
 from tqdm import tqdm
 
-import ddpm
+from DDPM import unet
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 torch.set_float32_matmul_precision('high')
@@ -45,7 +45,7 @@ class DDPM(L.LightningModule):
         self.sqrt_alpha_hat = torch.sqrt(self.alpha_hat)
         self.sqrt_1m_alpha_hat = torch.sqrt(1. - self.alpha_hat)
 
-        self.model = ddpm.UNet(img_channels)
+        self.model = unet.UNet(img_channels)
 
     def add_noise(self, x, t):
         noise = torch.randn_like(x)
@@ -69,7 +69,7 @@ class DDPM(L.LightningModule):
         self.model.eval()
         with torch.no_grad():
             x = torch.randn(n, img_channels, 64, 64, device=device)
-            for i in tqdm(reversed(range(1000))):
+            for i in reversed(range(1000)):
                 t = torch.full((n,), i, device=device)
                 alpha = self.alpha[t].view(-1, 1, 1, 1)
                 sqrt_1m_alpha_hat = self.sqrt_1m_alpha_hat[t].view(-1, 1, 1, 1)
@@ -93,6 +93,7 @@ class DDPM(L.LightningModule):
             grid.save(f'ddpm_samples/sample_{self.current_epoch}.png')
 
     def on_fit_end(self):
+        self.model.to(device)
         samples = self.sample(9)
         samples = samples * 0.5 + 0.5
         grid = torchvision.utils.make_grid(samples, nrow=3) * 255
@@ -119,9 +120,9 @@ if __name__ == '__main__':
         pin_memory=True
     )
     
-    ddpm = DDPM()
+    unet = DDPM()
     trainer = L.Trainer(
         max_epochs=100,
         default_root_dir='ddpm_logs',
     )
-    trainer.fit(ddpm, dataloader)
+    trainer.fit(unet, dataloader)
