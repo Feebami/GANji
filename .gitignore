@@ -13,3 +13,5 @@ yui.png
 /gan_resnet_kanji_dim128_layers\[512, 256, 128\]
 /ddpm_logs
 /ddpm_samples
+/gan_resnet_kanji_dim128_layers\[256, 128, 64, 32\]
+/gan_resnet_kanji_samples

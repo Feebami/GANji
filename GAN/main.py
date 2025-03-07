@@ -18,12 +18,12 @@ parser.add_argument('--epochs', type=int, default=100, help='The number of epoch
 parser.add_argument('--latent_dim', type=int, default=128, help='The dimension of the latent space')
 parser.add_argument('--lr', type=float, default=1e-4, help='The learning rate for training')
 parser.add_argument('--save_dir', type=str, default='gan', help='The directory to save the model and logs')
-parser.add_argument('--sample_every', type=int, default=2, help='The number of epochs between sampling')
+parser.add_argument('--sample_every', type=int, default=1, help='The number of epochs between sampling')
 parser.add_argument('--model', type=str, default='resnet', choices=['resnet', 'conv'], help='The model architecture to use (resnet or conv)')
 parser.add_argument('--loss', type=str, default='hinge', choices=['hinge', 'wasserstein', 'BCE'], help='The loss function to use (BCE, hinge, or wasserstein)')
 parser.add_argument('--disc_ratio', type=int, default=5, help='The number of times to train the discriminator per generator step')
 parser.add_argument('--gp', type=float, default=10, help='The gradient penalty coefficient')
-parser.add_argument('--layers', nargs='+', type=int, default=[512, 256, 128], help='The number of channels in each layer of the generator')
+parser.add_argument('--layers', nargs='+', type=int, default=[256, 128, 64, 32], help='The number of channels in each layer of the generator')
 parser.add_argument('--data', type=str, default='kanji', choices=['kanji', 'cifar', 'mnist', 'fairface'], help='Choose the dataset to use')
 args = parser.parse_args()
 
@@ -34,7 +34,6 @@ else:
 
 device  = 'cuda' if torch.cuda.is_available() else 'cpu'
 torch.set_float32_matmul_precision('high')
-img_channels = 3 if args.data in ['fairface', 'cifar'] else 1
 
 # Define the custom dataset class for loading Kanji images
 class Dataset(Dataset):
@@ -57,7 +56,7 @@ class Dataset(Dataset):
         return self.h_flip(self.data[idx])
 
 class GAN(L.LightningModule):
-    def __init__(self):
+    def __init__(self, img_channels):
         super().__init__()
         self.automatic_optimization = False
         self.generator = gan.Generator(args.latent_dim, args.layers, img_channels)
@@ -98,7 +97,6 @@ class GAN(L.LightningModule):
     def training_step(self, batch, batch_idx):
         opt_g, opt_d = self.optimizers()
         real_img = batch if args.data == 'kanji' else batch[0]
-        real_img = real_img.to(device)
 
         # Train the discriminator n times
         for _ in range(args.disc_ratio):
@@ -157,6 +155,7 @@ class GAN(L.LightningModule):
 
 if __name__ == '__main__':
         
+    img_channels = 3 if args.data in ['fairface', 'cifar'] else 1
     transform = v2.Compose([
         v2.Resize((64,64)),
         v2.ToImage(),

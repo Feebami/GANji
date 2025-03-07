@@ -228,3 +228,71 @@ exp 14:
     results:
         d_loss=0.0127, g_loss=3.480
         the black images turned into kanji after about 25 epochs. After 100 the kanji look pretty good. 
+exp 15:
+    hps:
+        batch_size: 256
+        epochs: 100
+        latent_dim: 256
+        lr: 1e-4
+        model: resnet
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128,64
+        data: kanji
+    other: added an additional residual block per layer size. 
+    time/epoch: ~2m50s
+    results:
+        d_loss=0.000359, g_loss=2.390
+        Just black images with dots or striped images or just black.
+exp 16:
+    hps:
+        batch_size: 128
+        epochs: 100
+        latent_dim: 128
+        lr: 2e-4
+        model: resnet
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128
+        data: kanji
+    results: bad
+exp 17:
+    hps:
+        batch_size: 128
+        epochs: 100
+        latent_dim: 128
+        lr: 5e-5
+        model: resnet
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128,64
+        data: kanji
+    results: bad
+exp 18:
+    hps:
+        batch_size: 128
+        epochs: 100
+        latent_dim: 128
+        lr: 1e-4
+        model: resnet
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 512,256,128,64
+        data: kanji
+    results: bad
+exp 19:
+    hps:
+        batch_size: 128
+        epochs: 100
+        latent_dim: 128
+        lr: 1e-4
+        model: resnet
+        loss: hinge
+        disc_ratio: 5
+        gp: 10
+        layers: 256,128,64
+        data: kanji

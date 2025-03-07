@@ -10,7 +10,7 @@ import torchvision
 from torchvision.transforms import v2
 from tqdm import tqdm
 
-from DDPM import unet
+import unet
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 torch.set_float32_matmul_precision('high')
@@ -112,7 +112,7 @@ if __name__ == '__main__':
     data = Dataset('kanji', transform)
     dataloader = DataLoader(
         data,
-        batch_size=64,
+        batch_size=32,
         shuffle=True,
         num_workers=4,
         persistent_workers=True,
@@ -124,5 +124,6 @@ if __name__ == '__main__':
     trainer = L.Trainer(
         max_epochs=100,
         default_root_dir='ddpm_logs',
+        precision='bf16-mixed'
     )
     trainer.fit(unet, dataloader)
