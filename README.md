@@ -1,8 +1,8 @@
 # GANji: real looking fake kanji
 ## Description
-## Datasets
 ## Table of Contents
 ## Motivation
+## Datasets
 ## Installation/Requirements
 ## Models
 ## Usage
