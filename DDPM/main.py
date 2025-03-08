@@ -3,7 +3,7 @@ import os
 
 import lightning as L
 import torch
-from torch.optim import Adam
+from torch.optim import Adam, lr_scheduler
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
 import torchvision
@@ -39,19 +39,28 @@ class Dataset(Dataset):
 class DDPM(L.LightningModule):
     def __init__(self):
         super().__init__()
-        self.beta = torch.linspace(1e-4, 0.02, 1000, device=device) # 
+        self.beta = self._cosine_beta().to(device)
         self.alpha = 1. - self.beta
-        self.alpha_hat = torch.cumprod(self.alpha, 0)
-        self.sqrt_alpha_hat = torch.sqrt(self.alpha_hat)
-        self.sqrt_1m_alpha_hat = torch.sqrt(1. - self.alpha_hat)
+        self.alpha_cumprod = torch.cumprod(self.alpha, 0)
+        self.sqrt_alpha_cumprod = torch.sqrt(self.alpha_cumprod)
+        self.sqrt_1m_alpha_cumprod = torch.sqrt(1. - self.alpha_cumprod)
 
         self.model = unet.UNet(img_channels)
 
+    def _cosine_beta(self, n_steps=1000, s=8e-3):
+        timesteps = torch.arange(n_steps+1, dtype=torch.float32) / n_steps + s
+        alphas = timesteps / (1 + s) * 0.5 * torch.pi
+        alphas = torch.cos(alphas) ** 2
+        alphas = alphas / alphas[0]
+        betas = 1 - alphas[1:] / alphas[:-1]
+        betas = betas.clamp(max=0.999)
+        return betas
+
     def add_noise(self, x, t):
         noise = torch.randn_like(x)
-        sqrt_alpha_hat = self.sqrt_alpha_hat[t].view(-1, 1, 1, 1)
-        sqrt_1m_alpha_hat = self.sqrt_1m_alpha_hat[t].view(-1, 1, 1, 1)
-        return sqrt_alpha_hat * x + sqrt_1m_alpha_hat * noise, noise
+        sqrt_alpha_cumprod = self.sqrt_alpha_cumprod[t].view(-1, 1, 1, 1)
+        sqrt_1m_alpha_cumprod = self.sqrt_1m_alpha_cumprod[t].view(-1, 1, 1, 1)
+        return sqrt_alpha_cumprod * x + sqrt_1m_alpha_cumprod * noise, noise
 
     def training_step(self, batch, batch_idx):
         x = batch
@@ -63,7 +72,15 @@ class DDPM(L.LightningModule):
         return loss
     
     def configure_optimizers(self):
-        return Adam(self.model.parameters(), lr=1e-4)
+        optimizer = Adam(self.model.parameters(), lr=1e-4)
+        scheduler = lr_scheduler.CosineAnnealingLR(optimizer, 100)
+        return {
+            'optimizer': optimizer,
+            'lr_scheduler': {
+                'scheduler': scheduler,
+                'interval': 'epoch',
+            }
+        }
     
     def sample(self, n):
         self.model.eval()
@@ -72,18 +89,18 @@ class DDPM(L.LightningModule):
             for i in reversed(range(1000)):
                 t = torch.full((n,), i, device=device)
                 alpha = self.alpha[t].view(-1, 1, 1, 1)
-                sqrt_1m_alpha_hat = self.sqrt_1m_alpha_hat[t].view(-1, 1, 1, 1)
+                sqrt_1m_alpha_cumprod = self.sqrt_1m_alpha_cumprod[t].view(-1, 1, 1, 1)
                 beta = self.beta[t].view(-1, 1, 1, 1)
-                noise_hat = self.model(x, t)
+                noise_cumprod = self.model(x, t)
                 if i > 0:
                     noise = torch.randn_like(x)
                 else:
                     noise = torch.zeros_like(x)
-                x = (x - (beta/sqrt_1m_alpha_hat) * noise_hat) / torch.sqrt(alpha) + torch.sqrt(beta) * noise
+                x = (x - (beta/sqrt_1m_alpha_cumprod) * noise_cumprod) / torch.sqrt(alpha) + torch.sqrt(beta) * noise
             return x
         
     def on_train_epoch_end(self):
-        if self.current_epoch % 5 == 0:
+        if self.current_epoch % 2 == 0:
             samples = self.sample(9)
             samples = samples * 0.5 + 0.5
             grid = torchvision.utils.make_grid(samples, nrow=3) * 255
@@ -112,7 +129,7 @@ if __name__ == '__main__':
     data = Dataset('kanji', transform)
     dataloader = DataLoader(
         data,
-        batch_size=32,
+        batch_size=16,
         shuffle=True,
         num_workers=4,
         persistent_workers=True,

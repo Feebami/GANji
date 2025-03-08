@@ -5,14 +5,17 @@ import torch.nn.functional as F
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class Block(nn.Module):
-    def __init__(self, in_channels, out_channels, emb_dim=128):
+    def __init__(self, in_channels, out_channels, emb_dim=256):
         super().__init__()
         self.block = nn.Sequential(
+            nn.Conv2d(in_channels, in_channels, 3, padding=1, bias=False),
+            nn.GroupNorm(4, in_channels),
+            nn.ReLU(True),
             nn.Conv2d(in_channels, out_channels, 3, padding=1, bias=False),
-            nn.BatchNorm2d(out_channels),
+            nn.GroupNorm(4, out_channels),
             nn.ReLU(True),
             nn.Conv2d(out_channels, out_channels, 3, padding=1, bias=False),
-            nn.BatchNorm2d(out_channels),
+            nn.GroupNorm(4, out_channels),
             nn.ReLU(True),
         )
 
@@ -24,11 +27,10 @@ class Block(nn.Module):
         return self.block(x) + self.shortcut(x) + self.emb_layer(t).unsqueeze(-1).unsqueeze(-1)
     
 class AttentionGate(nn.Module):
-    def __init__(self, kernel_size=7):
+    def __init__(self, kernel_size=5):
         super().__init__()
         self.conv = nn.Sequential(
             nn.Conv2d(2, 1, kernel_size, padding=kernel_size // 2, bias=False),
-            nn.BatchNorm2d(1),
             nn.ReLU(True),
         )
     def forward(self, x):
@@ -55,15 +57,22 @@ class UNet(nn.Module):
     def __init__(self, img_channels):
         super().__init__()
         self.input = nn.Conv2d(img_channels, 64, 3, padding=1)
+
         self.down1 = Block(64, 128)
         self.down2 = Block(128, 256)
         self.down3 = Block(256, 256)
+
         self.bottleneck1 = Block(256, 512)
         self.bottleneck2 = Block(512, 512)
         self.bottleneck3 = Block(512, 256)
+
+        # self.attn1 = TripletAttention()
         self.up1 = Block(512, 128)
+        # self.attn2 = TripletAttention()
         self.up2 = Block(256, 64)
+        # self.attn3 = TripletAttention()
         self.up3 = Block(128, 64)
+
         self.output = nn.Conv2d(64, img_channels, 3, padding=1)
 
         self.embedding = self.sinusoidal_embeddings().to(device)
@@ -82,21 +91,23 @@ class UNet(nn.Module):
         x = self.bottleneck2(x, t) # 512x8x8
         x = self.bottleneck3(x, t) # 256x8x8
 
-        skip_scale = 1.0
         x = F.interpolate(x, scale_factor=2, mode='bilinear', align_corners=True) # 256x16x16
-        x = torch.cat([x, x3 * skip_scale], dim=1) # 512x16x16
+        # x3 = self.attn1(x3)
+        x = torch.cat([x, x3], dim=1) # 512x16x16
         x = self.up1(x, t) # 128x16x16
         x = F.interpolate(x, scale_factor=2, mode='bilinear', align_corners=True) # 128x32x32
-        x = torch.cat([x, x2 * skip_scale], dim=1) # 256x32x32
+        # x2 = self.attn2(x2)
+        x = torch.cat([x, x2], dim=1) # 256x32x32
         x = self.up2(x, t) # 64x32x32
         x = F.interpolate(x, scale_factor=2, mode='bilinear', align_corners=True) # 64x64x64
-        x = torch.cat([x, x1 * skip_scale], dim=1) # 128x64x64
+        # x1 = self.attn3(x1)
+        x = torch.cat([x, x1], dim=1) # 128x64x64
         x = self.up3(x, t) # 64x64x64
         x = self.output(x) # img_channelsx64x64
 
         return x
     
-    def sinusoidal_embeddings(self, t=1000, emb_dim=128):
+    def sinusoidal_embeddings(self, t=1000, emb_dim=256):
         denom = 10000 ** (torch.arange(0, emb_dim, 2).float() / emb_dim)
         positions = torch.arange(0, t).float().unsqueeze(1)
         embeddings = torch.zeros(t, emb_dim)

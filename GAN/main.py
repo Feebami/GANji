@@ -24,7 +24,7 @@ parser.add_argument('--loss', type=str, default='hinge', choices=['hinge', 'wass
 parser.add_argument('--disc_ratio', type=int, default=5, help='The number of times to train the discriminator per generator step')
 parser.add_argument('--gp', type=float, default=10, help='The gradient penalty coefficient')
 parser.add_argument('--layers', nargs='+', type=int, default=[256, 128, 64, 32], help='The number of channels in each layer of the generator')
-parser.add_argument('--data', type=str, default='kanji', choices=['kanji', 'cifar', 'mnist', 'fairface'], help='Choose the dataset to use')
+parser.add_argument('--data', type=str, default='kanji', choices=['kanji', 'cifar', 'mnist'], help='Choose the dataset to use')
 args = parser.parse_args()
 
 if args.model == 'resnet':
@@ -155,7 +155,7 @@ class GAN(L.LightningModule):
 
 if __name__ == '__main__':
         
-    img_channels = 3 if args.data in ['fairface', 'cifar'] else 1
+    img_channels = 3 if args.data == 'cifar' else 1
     transform = v2.Compose([
         v2.Resize((64,64)),
         v2.ToImage(),
@@ -169,9 +169,6 @@ if __name__ == '__main__':
     elif args.data == 'mnist':
         print('Using MNIST dataset')
         data = torchvision.datasets.MNIST('mnist', download=True, transform=transform)
-    elif args.data == 'fairface':
-        print('Using FairFace dataset')
-        data = Dataset('fairface', transform=transform)
     else:
         print('Using Kanji dataset')
         data = Dataset('kanji', transform=transform)
