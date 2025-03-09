@@ -104,9 +104,18 @@ As stated previously, this method worked well early on, and there weren't many s
 Additionally, the blocks created for the encoder and decoder were not only effective for the VAE but also served as a solid foundation for designing the architectures of the GAN and DDPM later in the project. This reusability of components significantly streamlined the implementation of the other models.
 
 #### Results
-| ![VAE epoch 10](display_imgs/VAE_epoch10.png) | ![VAE epoch 20](display_imgs/VAE_epoch20.png) | ![VAE epoch 100](display_imgs/VAE_epoch100.png) |
-|:-----------------------------:|:-----------------------------:|:-----------------------------:|
-| *VAE epoch 10*        | *VAE epoch 50*        | *VAE epoch 100*        |
+<table>
+  <tr>
+    <td align="center"><img src="display_imgs/VAE_epoch10.png" alt="VAE epoch 10" width="200"/></td>
+    <td align="center"><img src="display_imgs/VAE_epoch20.png" alt="VAE epoch 20" width="200"/></td>
+    <td align="center"><img src="display_imgs/VAE_epoch100.png" alt="VAE epoch 100" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center"><em>VAE epoch 10</em></td>
+    <td align="center"><em>VAE epoch 20</em></td>
+    <td align="center"><em>VAE epoch 100</em></td>
+  </tr>
+</table>
 
 These images were inverted during the sampling process, a post-processing step that was only applied to the VAE samples. When testing the GAN with the CIFAR-10 dataset, I found this inversion to be undesirable, so it was omitted for other models.
 
@@ -184,8 +193,6 @@ To improve my workflow, I introduced better experimentation methods, such as sta
 Ultimately, after days of frustration, I identified the culprits inhibiting model performance and found a configuration that worked. This breakthrough came shortly after the model began producing recognizable results, giving me confidence to continue refining the architecture further. Through this process, I learned an important lesson: avoid adding unnecessary features or complexity early on. Gradually ramping up complexity provides a stable baseline and makes debugging much easier. Starting with simpler configurations would have made it far easier to identify the issues with the learning rate scheduler and mixed precision from the outset.
 
 #### Results
-<h4>Results</h4>
-
 <table>
   <tr>
     <td align="center"><img src="display_imgs/GAN_epoch1.png" alt="GAN epoch 1" width="200"/></td>
@@ -289,9 +296,20 @@ Inspired by an example repository I was referencing, I attempted to enhance the 
 Despite the DDPM's larger and deeper architecture compared to the GAN, training was significantly faster, and improvements were easier to iterate. The deterministic nature of the denoising process, coupled with stable loss dynamics, made debugging and experimenting with the DDPM far less time-consuming than the GAN.
 
 #### Results
-| ![DDPM epoch 1](display_imgs/DDPM_epoch1.png) | ![DDPM epoch 5](display_imgs/DDPM_epoch5.png) | ![DDPM epoch 25](display_imgs/DDPM_epoch25.png) | ![DDPM epoch 100](display_imgs/DDPM_epoch100.png) |
-|:-----------------------------:|:-----------------------------:|:-----------------------------:|:-----------------------------:|
-| *DDPM epoch 1*         | *DDPM epoch 5*         | *DDPM epoch 25*         | *DDPM epoch 100*        |
+<table>
+  <tr>
+    <td align="center"><img src="display_imgs/DDPM_epoch1.png" alt="DDPM epoch 1" width="200"/></td>
+    <td align="center"><img src="display_imgs/DDPM_epoch5.png" alt="DDPM epoch 5" width="200"/></td>
+    <td align="center"><img src="display_imgs/DDPM_epoch25.png" alt="DDPM epoch 25" width="200"/></td>
+    <td align="center"><img src="display_imgs/DDPM_epoch100.png" alt="DDPM epoch 100" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center"><em>DDPM epoch 1</em></td>
+    <td align="center"><em>DDPM epoch 5</em></td>
+    <td align="center"><em>DDPM epoch 25</em></td>
+    <td align="center"><em>DDPM epoch 100</em></td>
+  </tr>
+</table>
 
 After the first epoch, the model has not yet learned how to remove noise effectively, resulting in outputs that are indistinguishable from random noise. By epoch 5, the model still produces mostly noise, but the outputs begin to show variation depending on the initial random conditions, indicating the model is starting to distinguish different patterns in the latent space.
 
