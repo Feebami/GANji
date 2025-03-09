@@ -93,11 +93,11 @@ To adjust hyperparameters (e.g., learning rate, diffusion steps), you will need 
 ### GAN
 | ![GAN epoch 1](display_imgs/GAN_epoch1.png) | ![GAN epoch 5](display_imgs/GAN_epoch5.png) | ![GAN epoch 25](display_imgs/GAN_epoch25.png) | ![GAN epoch 100](display_imgs/GAN_epoch100.png) |
 |:-----------------------------:|:-----------------------------:|:-----------------------------:|:-----------------------------:|
-| *GAN epoch 10*        | *GAN epoch 50*        | *GAN epoch 100*        | *GAN epoch 100*        |
+| *GAN epoch 1*        | *GAN epoch 5*        | *GAN epoch 25*        | *GAN epoch 100*        |
 ### DDPM
 | ![DDPM epoch 1](display_imgs/DDPM_epoch1.png) | ![DDPM epoch 5](display_imgs/DDPM_epoch5.png) | ![DDPM epoch 20](display_imgs/DDPM_epoch25.png) | ![DDPM epoch 100](display_imgs/DDPM_epoch100.png) |
 |:-----------------------------:|:-----------------------------:|:-----------------------------:|:-----------------------------:|
-| *DDPM epoch 10*        | *DDPM epoch 50*        | *DDPM epoch 100*        | *DDPM epoch 100*        |
+| *DDPM epoch 1*        | *DDPM epoch 5*        | *DDPM epoch 25*        | *DDPM epoch 100*        |
 ## Credits
 GAN related repositories:
 [pytorch-spectral-normalization-gan](https://github.com/christiancosgrove/pytorch-spectral-normalization-gan)
