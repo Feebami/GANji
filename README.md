@@ -18,24 +18,25 @@ The motivation for this project came from the desire to explore AI image generat
     - **CIFAR-10**: The CIFAR-10 dataset is a dataset of 32x32 pixel images of 10 different classes of objects. It is a common dataset used to test image classification algorithms.
 ### Sample Kanji Data
 ![Sample Kanji Data](display_imgs/input_kanji_sample.png)
-## Installation/Requirements
+## Requirements
+- python=3.11
 ### Packages
 - lightning=2.5.0
 - matplotlib=3.10.0
 - numpy=2.2.3
-- python=3.11.11
-- tk=8.6.13
 - torch=2.6.0
 - torchvision=0.21.0
 - tqdm=4.67.1
-### Installation
-1. Clone the repository
-2. Install the required packages
-    - `pip install -r requirements.txt`
-3. Download the Kanji dataset from the link above
-## Models
-### Variational AutoEncoder
+## Pipeline
+### Data Loading
+The Kanji images were loaded into memory using Python Imaging Library (PIL) and torchvision transformations. The images were resized to 64 by 64 pixels to allow for more pooling in the convolutional networks. A random horizontal flip was used as data augmentation to effectively double the training dataset. Although Kanji characters are generally not horizontally symmetrical, the benefit of increased dataset size outweighed potential distortions. This preprocessing step enhanced the model's ability to generalize by providing varied training inputs.
+### Models
+#### Variational AutoEncoder
+The Variational AutoEncoder (VAE) consists of two primary components: an encoder, which compresses input images into a compact n-dimensional latent representation, and a decoder, which reconstructs the original images from these compressed representations. The model is optimized by minimizing a combined loss function that consists of two terms: the binary cross-entropy loss between the original and reconstructed pixel values, and the Kullback-Leibler divergence of the learned latent space distribution from a predefined prior distribution.
 
+The final VAE architecture utilized a ResNet-like design. Specifically, the encoder and decoder each comprised 7 residual blocks, with the encoder progressively increasing channel dimensions from 64 to 512 filters, and the decoder symmetrically decreasing them from 512 back down to 64. These residual blocks were combined with convolutional layers at the input and output stages to handle the specified image dimensions, as well as linear layers to transition between the three-dimensional image tensors and the lower-dimensional latent space.
+
+See [resnet_vae.py](VAE/resnet_vae.py) for model creation code.
 ## Usage
 ### Sample GANji
 #### VAE
