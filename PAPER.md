@@ -379,12 +379,19 @@ The results demonstrated the GAN's ability to produce the cleanest Kanji-like im
 ## Credits
 ### GitHub Repositories
 **GAN related repositories:**
+
 [pytorch-spectral-normalization-gan](https://github.com/christiancosgrove/pytorch-spectral-normalization-gan)
+
 [PyTorch-GAN](https://github.com/eriklindernoren/PyTorch-GAN)
+
 **Diffusion related repositories:**
+
 [Diffusion-Models-pytorch](https://github.com/dome272/Diffusion-Models-pytorch/tree/main)
+
 [denoising-diffusion-pytorch](https://github.com/rosinality/denoising-diffusion-pytorch/tree/master)
+
 **Triplet Attention:**
+
 [triplet-attention](https://github.com/landskape-ai/triplet-attention/tree/f07524e45db5eea1357c50316f30ab99a292d2f9)
 
 ### Useful Book
