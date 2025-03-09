@@ -101,19 +101,19 @@ To adjust hyperparameters (e.g., learning rate, diffusion steps), you will need 
 ## Credits
 GAN related repositories:
 
-[pytorch-spectral-normalization-gan](https://github.com/christiancosgrove/pytorch-spectral-normalization-gan)
+- [pytorch-spectral-normalization-gan](https://github.com/christiancosgrove/pytorch-spectral-normalization-gan)
 
-[PyTorch-GAN](https://github.com/eriklindernoren/PyTorch-GAN)
+- [PyTorch-GAN](https://github.com/eriklindernoren/PyTorch-GAN)
 
 Diffusion related repositories:
 
-[Diffusion-Models-pytorch](https://github.com/dome272/Diffusion-Models-pytorch/tree/main)
+- [Diffusion-Models-pytorch](https://github.com/dome272/Diffusion-Models-pytorch/tree/main)
 
-[denoising-diffusion-pytorch](https://github.com/rosinality/denoising-diffusion-pytorch/tree/master)
+- [denoising-diffusion-pytorch](https://github.com/rosinality/denoising-diffusion-pytorch/tree/master)
 
 Triplet Attention:
 
-[triplet-attention](https://github.com/landskape-ai/triplet-attention/tree/f07524e45db5eea1357c50316f30ab99a292d2f9)
+- [triplet-attention](https://github.com/landskape-ai/triplet-attention/tree/f07524e45db5eea1357c50316f30ab99a292d2f9)
 
 ## Further Reading
 For a detailed exploration of the project, including the methodology, architecture design, training processes, experiments conducted, and lessons learned, please read the accompanying paper, ["GANji: Real Looking Fake Kanji"](https://feebami.github.io/GANji/PAPER.html). The paper, hosted on GitHub Pages within this repository, is written as a mix of a research article and blog post to make the technical details approachable yet thorough.
