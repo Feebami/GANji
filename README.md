@@ -58,7 +58,7 @@ Fake Kanji images can be generated easily using the provided script, [generate_k
 
 ![Generate Kanji Window](display_imgs/generate_kanji_window.png) 
 
-    allowing you to select a model to use.
+   allowing you to select a model to use.
 
 4. Click the **Generate Kanji** button and a 4x4 grid of kanji samples will appear in a pop-up window.
 ### Training Models
