@@ -85,6 +85,9 @@ The DDPM training script is less configurable via the command line, as it does n
 To adjust hyperparameters (e.g., learning rate, diffusion steps), you will need to modify the code within the [main.py](DDPM/main.py) or [unet.py](DDPM/unet.py) manually.
 ## Samples
 ### VAE
+| ![VAE epoch 10](display_imgs/VAE_epoch10.png) | ![VAE epoch 50](display_imgs/VAE_epoch50.png) | ![VAE epoch 100](display_imgs/VAE_epoch100.png) |
+|:-----------------------------:|:-----------------------------:|:-----------------------------:|
+| *VAE epoch 10*        | *VAE epoch 50*        | *VAE epoch 100*        |
 ### GAN
 ### DDPM
 ## Credits
