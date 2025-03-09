@@ -186,7 +186,7 @@ Ultimately, after days of frustration, I identified the culprits inhibiting mode
 #### Results
 | ![GAN epoch 1](display_imgs/GAN_epoch1.png) | ![GAN epoch 5](display_imgs/GAN_epoch5.png) | ![GAN epoch 25](display_imgs/GAN_epoch25.png) | ![GAN epoch 100](display_imgs/GAN_epoch100.png) |
 |:-----------------------------:|:-----------------------------:|:-----------------------------:|:-----------------------------:|
-| *GAN epoch 1*        | *GAN epoch 5*        | *GAN epoch 25*        | *GAN epoch 100*        |
+| *GAN epoch 1*         | *GAN epoch 5*         | *GAN epoch 25*         | *GAN epoch 100*        |
 
 Even after just 1 epoch, the model starts to recognize where the majority of the lines in the Kanji are located. However, as training progressed, the discriminator began to overpower the generator, causing the generator to "play it safe" by producing mostly black images. This imbalance persisted for a short period until, by epoch 25, the generator began to recover and produce patterns resembling lines, albeit still far from structured Kanji.
 
@@ -278,7 +278,7 @@ Despite the DDPM's larger and deeper architecture compared to the GAN, training 
 #### Results
 | ![DDPM epoch 1](display_imgs/DDPM_epoch1.png) | ![DDPM epoch 5](display_imgs/DDPM_epoch5.png) | ![DDPM epoch 25](display_imgs/DDPM_epoch25.png) | ![DDPM epoch 100](display_imgs/DDPM_epoch100.png) |
 |:-----------------------------:|:-----------------------------:|:-----------------------------:|:-----------------------------:|
-| *DDPM epoch 1*        | *DDPM epoch 5*        | *DDPM epoch 25*        | *DDPM epoch 100*        |
+| *DDPM epoch 1*         | *DDPM epoch 5*         | *DDPM epoch 25*         | *DDPM epoch 100*        |
 
 After the first epoch, the model has not yet learned how to remove noise effectively, resulting in outputs that are indistinguishable from random noise. By epoch 5, the model still produces mostly noise, but the outputs begin to show variation depending on the initial random conditions, indicating the model is starting to distinguish different patterns in the latent space.
 
