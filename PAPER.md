@@ -184,9 +184,22 @@ To improve my workflow, I introduced better experimentation methods, such as sta
 Ultimately, after days of frustration, I identified the culprits inhibiting model performance and found a configuration that worked. This breakthrough came shortly after the model began producing recognizable results, giving me confidence to continue refining the architecture further. Through this process, I learned an important lesson: avoid adding unnecessary features or complexity early on. Gradually ramping up complexity provides a stable baseline and makes debugging much easier. Starting with simpler configurations would have made it far easier to identify the issues with the learning rate scheduler and mixed precision from the outset.
 
 #### Results
-| ![GAN epoch 1](display_imgs/GAN_epoch1.png) | ![GAN epoch 5](display_imgs/GAN_epoch5.png) | ![GAN epoch 25](display_imgs/GAN_epoch25.png) | ![GAN epoch 100](display_imgs/GAN_epoch100.png) |
-|:-----------------------------:|:-----------------------------:|:-----------------------------:|:-----------------------------:|
-| *GAN epoch 1*         | *GAN epoch 5*         | *GAN epoch 25*         | *GAN epoch 100*        |
+<h4>Results</h4>
+
+<table>
+  <tr>
+    <td align="center"><img src="display_imgs/GAN_epoch1.png" alt="GAN epoch 1" width="200"/></td>
+    <td align="center"><img src="display_imgs/GAN_epoch5.png" alt="GAN epoch 5" width="200"/></td>
+    <td align="center"><img src="display_imgs/GAN_epoch25.png" alt="GAN epoch 25" width="200"/></td>
+    <td align="center"><img src="display_imgs/GAN_epoch100.png" alt="GAN epoch 100" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center"><em>GAN epoch 1</em></td>
+    <td align="center"><em>GAN epoch 5</em></td>
+    <td align="center"><em>GAN epoch 25</em></td>
+    <td align="center"><em>GAN epoch 100</em></td>
+  </tr>
+</table>
 
 Even after just 1 epoch, the model starts to recognize where the majority of the lines in the Kanji are located. However, as training progressed, the discriminator began to overpower the generator, causing the generator to "play it safe" by producing mostly black images. This imbalance persisted for a short period until, by epoch 25, the generator began to recover and produce patterns resembling lines, albeit still far from structured Kanji.
 
