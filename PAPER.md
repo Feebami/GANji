@@ -9,13 +9,23 @@
 **Repository:** [GitHub](https://github.com/feebami/GANji)
 
 ---
-## Abstract
 ## Introduction
 This project combines two of my main interests: deep learning and the Japanese language. As a learner of Japanese, it took me a long time to fully appreciate Kanji characters and the vital role they play in the language as a whole. To me, and to many others before studying and learning how to read them, Kanji just look like a collection of jumbled lines and shapes. However, there is a hidden structure and logic to them that reveal their meaning and utility. I believe this made Kanji a particularly interesting and challenging task for training generative AI models. Because I have learned a fair number of Kanji, it is easy for me to visually evaluate how well the models were able to mimic these characters.
 
 Generative AI models like DALL·E, MidJourney, and others have revolutionized the field of AI image generation, making it possible to create stunning visual outputs from text prompts. Curious about how these models work, I decided to explore these techniques myself and learn how to apply them to create something both visually compelling and technical—fake Kanji generation. Once I found a suitable dataset of Kanji images to practice training these generative models, I knew this would be a project I would enjoy.
 
 After reading *Hands-On Machine Learning with Scikit-Learn, Keras & TensorFlow*, I was introduced to three key generative modeling techniques: Variational Autoencoders (VAEs), Generative Adversarial Networks (GANs), and Denoising Diffusion Probabilistic Models (DDPMs). This inspired me to focus the project on evaluating and comparing the performance of these techniques in generating realistic Kanji characters.
+## Table of Contents
+- [Datasets and Preprocessing](#datasets-and-preprocessing)
+- [Model Creation](#model-creation)
+    - [VAE](#variational-autoencoder-vae)
+    - [GAN](#generative-adversarial-network-gan)
+    - [DDPM](#denoising-diffusion-probabilistic-model-ddpm)
+- [Comparative Analysis](#comparative-analysis)
+- [Challenges and Lessons Learned](#challenges-and-lessons-learned)
+- [Applications and Future Work](#applications-and-future-work)
+- [Conclusion](#conclusion)
+- [Credits](#credits)
 ## Datasets and Preprocessing
 Three datasets were used in this project: the main [Kanji Dataset](https://www.kaggle.com/datasets/frammie/kanjieast-asian-characters), as well as MNIST and CIFAR-10. The Kanji Dataset served as the primary dataset for training all three generative models, as it contained approximately 10,000 black-and-white images of Kanji characters in a standardized font. These images were well-suited for evaluation due to their consistent structure and relatively small resolution, making them manageable for training on personal hardware.
 
