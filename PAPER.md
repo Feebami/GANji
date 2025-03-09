@@ -43,7 +43,7 @@ To prepare the data for training, the Kanji images were preprocessed using a cus
 
 A random horizontal flip was applied to the Kanji images as a data augmentation technique. While Kanji characters are generally asymmetrical, the augmentation effectively doubled the training dataset size and introduced variation that improved the models' generalization. This trade-off between introducing distortion and increasing data diversity was deemed worthwhile.
 
-See the **KanjiDataset** class in [VAE/main.py](VAE/main.py) as well as the transform variable. 
+See the **KanjiDataset** class in [VAE/main.py](https://github.com/Feebami/GANji/blob/main/VAE/main.py) as well as the transform variable. 
 
 ### CIFAR-10 and MNIST Preprocessing
 When using CIFAR-10 and MNIST datasets for GAN testing, a similar preprocessing approach was applied. CIFAR-10 images, being natural color images, were normalized with three channels ([R, G, B]) to the range [-1, 1], while MNIST grayscale images used a single channel. Both datasets were resized to 64x64 pixels to match the input size expected by the GAN architecture. These preprocessing steps ensured compatibility between the datasets and the implemented GAN, enabling seamless transitions between debugging and Kanji experiments.
@@ -51,7 +51,7 @@ When using CIFAR-10 and MNIST datasets for GAN testing, a similar preprocessing 
 ### Data Loading
 The preprocessed images were loaded using a PyTorch DataLoader, which enabled batch processing and efficient feeding of data to the models. For the Kanji Dataset, a custom Dataset class was used to load the images from disk, perform transformations, and apply horizontal flips dynamically during training. For CIFAR-10 and MNIST, the respective PyTorch datasets provided built-in functionality to handle download and loading. The DataLoader was configured with multi-threaded workers (num_workers=4), memory pinning (pin_memory=True), and prefetching (prefetch_factor=2) to optimize the throughput of data pipelines, minimizing I/O bottlenecks during training.
 
-See the **dataloader** variable in [VAE/main.py](VAE/main.py).
+See the **dataloader** variable in [VAE/main.py](https://github.com/Feebami/GANji/blob/main/VAE/main.py).
 
 ### Sample Kanji Data
 ![Sample Kanji Data](display_imgs/input_kanji_sample.png)
@@ -83,8 +83,8 @@ The decoder mirrored the encoder architecture, with its input being the flattene
 This ResNet-inspired VAE architecture demonstrated stability during training and effectively captured the complex structures of Kanji for generating plausible reconstructions. Its symmetric encoder-decoder design, combined with residual connections, proved crucial for the model's success.
 
 Files for code: 
-- [VAE/resnet_vae.py](VAE/resnet_vae.py)
-- [VAE/variation_autoencoder.py](VAE/variation_autoencoder.py)
+- [VAE/resnet_vae.py](https://github.com/Feebami/GANji/blob/main/VAE/resnet_vae.py)
+- [VAE/variation_autoencoder.py](https://github.com/Feebami/GANji/blob/main/VAE/variational_autoencoder.py)
 
 #### Training process
 Training the Variational AutoEncoder (VAE) was implemented using PyTorch Lightning for efficient and modular workflow management. The VAE is trained to minimize a combination of two loss terms: the reconstruction loss and the Kullback-Leibler (KL) divergence. The reconstruction loss, calculated using binary cross-entropy with logits, measures how accurately the decoder reconstructs the input images from their latent representations. The KL divergence regularizes the latent space by encouraging the learned distribution to match a Gaussian prior. The total loss for each batch is the sum of these two terms, ensuring both high-quality reconstructions and a well-structured latent space.
@@ -96,7 +96,7 @@ During training, the model logs the total training loss (train_loss) for trackin
 The training loop is managed using PyTorch Lightning's Trainer class, which automates key tasks like device management, checkpointing, and logging. A bf16-mixed precision was used to speed up training while reducing memory usage on compatible GPUs.
 
 Files for code:
-- [VAE/main.py](VAE/main.py)
+- [VAE/main.py](https://github.com/Feebami/GANji/blob/main/VAE/main.py)
 
 #### Hurdles and Lessons Learned
 As stated previously, this method worked well early on, and there weren't many significant hurdles. The main challenge was ensuring that the Conv2d and ConvTranspose2d layers produced tensors of the correct size, upsampling and downsampling as intended. The equation provided in the [PyTorch documentation](https://pytorch.org/docs/stable/generated/torch.nn.ConvTranspose2d.html) for calculating the height and width of the output tensor proved invaluable in resolving these issues.
@@ -156,8 +156,8 @@ The GAN implementation for this project used both ResNet-inspired and vanilla co
 The ResNet-inspired versions generally yielded better results, offering improved stability and a stronger capability to capture complex features within the data. All Conv2d and ConvTranspose2d layers utilized a kernel size of 3x3. Additionally, BatchNorm2d was intentionally excluded from the discriminator to ensure its predictions remained independent of batch-level statistics.
 
 Files for code:
-- [GAN/resgan.py](GAN/resgan.py)
-- [GAN/gan.py](GAN/gan.py)
+- [GAN/resgan.py](https://github.com/Feebami/GANji/blob/main/GAN/resgan.py)
+- [GAN/gan.py](https://github.com/Feebami/GANji/blob/main/GAN/gan.py)
 
 #### Training Process
 The GAN was trained in an adversarial manner, alternating between updates to the generator and the discriminator.
@@ -181,7 +181,7 @@ To monitor progress, samples were generated and saved at regular intervals (--sa
 The GAN training was implemented using PyTorch Lightning's Trainer class to automate key tasks such as logging, checkpointing, and hardware management. This modular setup enabled efficient experimentation with different architectures, datasets (Kanji, MNIST, CIFAR-10), and loss functions. Bf16-mixed precision was **not** used.
 
 Files for code:
-- [GAN/main.py](GAN/main.py)
+- [GAN/main.py](https://github.com/Feebami/GANji/blob/main/GAN/main.py)
 
 #### Hurdles and Lessons Learned
 When transitioning to the GAN, I attempted to apply lessons from the VAE too quickly, assuming that previously successful techniques would work universally. However, features such as the OneCycleLR learning rate scheduler and bf16-mixed precision proved detrimental to the GAN's performance. These choices prevented the model from converging and led to generated images that did not resemble the training data. Identifying these problems required several days of experimentation, which was further exacerbated by the long training times of the GAN, limiting the number of experiments I could run each day.
@@ -254,7 +254,7 @@ This U-Net design makes the model well-suited for predicting and removing noise 
 Convolutional layers in the network used a kernel size of 3x3 and a group number of 4 was found to work well with the GroupNorm layers.
 
 File for code:
-- [DDPM/unet.py](DDPM/unet.py)
+- [DDPM/unet.py](https://github.com/Feebami/GANji/blob/main/DDPM/unet.py)
 
 #### Training Process
 Training the DDPM centers on minimizing the mean squared error (MSE) between the predicted noise and the true Gaussian noise added during the forward diffusion process. This encourages the model to accurately predict and remove noise during the reverse process. Below is a breakdown of the training process:
@@ -286,7 +286,7 @@ Training the DDPM centers on minimizing the mean squared error (MSE) between the
 - Bf16-mixed precision is used to reduce memory usage and accelerate computations on GPUs.
 
 Files for code:
-- [DDPM/main.py](DDPM/main.py)
+- [DDPM/main.py](https://github.com/Feebami/GANji/blob/main/DDPM/main.py)
 
 #### Hurdles and Lessons Learned
 Training the DDPM presented several challenges, particularly in achieving stability with the generated images. One recurring issue was the model producing high-quality images during training, only to revert to random noise a few epochs later. After careful experimentation, I determined that the optimizer may have been making overly aggressive parameter updates, which destabilized the training process. Introducing a cosine annealing learning rate scheduler resolved this issue, allowing the model to converge more smoothly and produce stable samples by the end of training.
