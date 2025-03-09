@@ -91,7 +91,7 @@ To adjust hyperparameters (e.g., learning rate, diffusion steps), you will need 
 |:-----------------------------:|:-----------------------------:|:-----------------------------:|
 | *VAE epoch 10*        | *VAE epoch 50*        | *VAE epoch 100*        |
 ### GAN
-| ![GAN epoch 1](display_imgs/GAN_epoch1.png) | ![GAN epoch 5](display_imgs/GAN_epoch5.png) | ![GAN epoch 20](display_imgs/GAN_epoch25.png) | ![GAN epoch 100](display_imgs/GAN_epoch100.png) |
+| ![GAN epoch 1](display_imgs/GAN_epoch1.png) | ![GAN epoch 5](display_imgs/GAN_epoch5.png) | ![GAN epoch 25](display_imgs/GAN_epoch25.png) | ![GAN epoch 100](display_imgs/GAN_epoch100.png) |
 |:-----------------------------:|:-----------------------------:|:-----------------------------:|:-----------------------------:|
 | *GAN epoch 10*        | *GAN epoch 50*        | *GAN epoch 100*        | *GAN epoch 100*        |
 ### DDPM
