@@ -56,7 +56,10 @@ Fake Kanji images can be generated easily using the provided script, [generate_k
 2. Run the script with the command: `python ./generate_kanji.py`
 3. This pop-up window will appear: 
 
-![Generate Kanji Window](display_imgs/generate_kanji_window.png) allowing you to select a model to use.
+![Generate Kanji Window](display_imgs/generate_kanji_window.png) 
+
+    allowing you to select a model to use.
+
 4. Click the **Generate Kanji** button and a 4x4 grid of kanji samples will appear in a pop-up window.
 ### Training Models
 The VAE and GAN training scripts are designed for ease of use, supporting various arguments for quick experimentation. Each script provides a -h argument to display available options and configurations. For example:
