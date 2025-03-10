@@ -15,3 +15,4 @@ yui.png
 /ddpm_samples
 /gan_resnet_kanji_dim128_layers\[256, 128, 64, 32\]
 /gan_resnet_kanji_samples
+PAPER.md
