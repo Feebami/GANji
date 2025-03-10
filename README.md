@@ -117,3 +117,5 @@ Triplet Attention:
 
 ## Further Reading
 For a detailed exploration of the project, including the methodology, architecture design, training processes, experiments conducted, and lessons learned, please read the accompanying paper, ["GANji: Real Looking Fake Kanji"](https://feebami.github.io/GANji). The paper, hosted on GitHub Pages within this repository, is written as a mix of a research article and blog post to make the technical details approachable yet thorough.
+
+**This is in work**
