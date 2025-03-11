@@ -16,3 +16,9 @@ yui.png
 /gan_resnet_kanji_dim128_layers\[256, 128, 64, 32\]
 /gan_resnet_kanji_samples
 PAPER.md
+/vae_resnet_dim256_samples
+/vae_resnet_dim512_100
+/gan_resnet_spectralnorm_samples
+/vae_resnet_dim128_100
+/vae_resnet_dim128_samples
+/vae_resnet_dim512_samples

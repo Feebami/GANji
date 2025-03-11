@@ -18,12 +18,12 @@ parser.add_argument('--epochs', type=int, default=100, help='The number of epoch
 parser.add_argument('--latent_dim', type=int, default=128, help='The dimension of the latent space')
 parser.add_argument('--lr', type=float, default=1e-4, help='The learning rate for training')
 parser.add_argument('--save_dir', type=str, default='gan', help='The directory to save the model and logs')
-parser.add_argument('--sample_every', type=int, default=1, help='The number of epochs between sampling')
+parser.add_argument('--sample_every', type=int, default=2, help='The number of epochs between sampling')
 parser.add_argument('--model', type=str, default='resnet', choices=['resnet', 'conv'], help='The model architecture to use (resnet or conv)')
 parser.add_argument('--loss', type=str, default='hinge', choices=['hinge', 'wasserstein', 'BCE'], help='The loss function to use (BCE, hinge, or wasserstein)')
 parser.add_argument('--disc_ratio', type=int, default=5, help='The number of times to train the discriminator per generator step')
 parser.add_argument('--gp', type=float, default=10, help='The gradient penalty coefficient')
-parser.add_argument('--layers', nargs='+', type=int, default=[256, 128, 64, 32], help='The number of channels in each layer of the generator')
+parser.add_argument('--layers', nargs='+', type=int, default=[512, 256, 128], help='The number of channels in each layer of the generator')
 parser.add_argument('--data', type=str, default='kanji', choices=['kanji', 'cifar', 'mnist'], help='Choose the dataset to use')
 args = parser.parse_args()
 
@@ -110,7 +110,6 @@ class GAN(L.LightningModule):
 
             real_pred = self.discriminator(real_img).squeeze()
             fake_pred = self.discriminator(fake_img).squeeze()
-            
 
             d_loss = self.d_loss_fn(real_pred, fake_pred, grad_penalty)
             self.manual_backward(d_loss)
@@ -150,8 +149,8 @@ class GAN(L.LightningModule):
             grid = grid * 255
             grid = grid.type(torch.uint8).cpu().numpy().transpose(1,2,0).squeeze()
             img = Image.fromarray(grid, mode='RGB')
-            os.makedirs(f'{args.save_dir}_{args.model}_{args.data}_samples', exist_ok=True)
-            img.save(f'{args.save_dir}_{args.model}_{args.data}_samples/sample_{self.current_epoch}.png')
+            os.makedirs(f'{args.save_dir}_{args.model}_spectralnorm_samples', exist_ok=True)
+            img.save(f'{args.save_dir}_{args.model}_spectralnorm_samples/sample_{self.current_epoch}.png')
 
 if __name__ == '__main__':
         

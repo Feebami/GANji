@@ -19,10 +19,10 @@ import variational_autoencoder
 parser = argparse.ArgumentParser(description='Train a variational autoencoder on Kanji characters')
 parser.add_argument('--batch_size', type=int, default=256, help='The batch size for training')
 parser.add_argument('--epochs', type=int, default=100, help='The number of epochs to train for')
-parser.add_argument('--latent_dim', type=int, default=256, help='The dimension of the latent space')
+parser.add_argument('--latent_dim', type=int, default=128, help='The dimension of the latent space')
 parser.add_argument('--lr', type=float, default=1e-3, help='The learning rate for training')
 parser.add_argument('--save_dir', type=str, default='vae', help='The directory to save the model and logs')
-parser.add_argument('--sample_every', type=int, default=10, help='The number of epochs between sampling')
+parser.add_argument('--sample_every', type=int, default=5, help='The number of epochs between sampling')
 parser.add_argument('--model', type=str, default='resnet', help='The model architecture to use (resnet or conv)')
 args = parser.parse_args()
 
@@ -105,8 +105,8 @@ class VAE(L.LightningModule):
             grid = 255 - grid * 255
             grid = grid.type(torch.uint8).cpu().numpy().transpose(1,2,0).squeeze()
             img = Image.fromarray(grid, mode='RGB')
-            os.makedirs(f'{args.save_dir}_{args.model}_samples', exist_ok=True)
-            img.save(f'{args.save_dir}_{args.model}_samples/sample_{self.current_epoch}.png')
+            os.makedirs(f'{args.save_dir}_{args.model}_dim{args.latent_dim}_samples', exist_ok=True)
+            img.save(f'{args.save_dir}_{args.model}_dim{args.latent_dim}_samples/sample_{self.current_epoch}.png')
 
 if __name__ == '__main__':
 
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     vae = VAE()
     trainer = L.Trainer(
         max_epochs=args.epochs,
-        precision='bf16-mixed' if device == 'cuda' else 32,
+        precision='bf16-mixed',
         default_root_dir=f'{args.save_dir}_{args.model}_dim{args.latent_dim}_{args.epochs}',
     )
 
