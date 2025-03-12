@@ -54,7 +54,7 @@ class TripletAttention(nn.Module):
         return (cw_atten + hc_atten + hw_atten) / 3
     
 class UNet(nn.Module):
-    def __init__(self, img_channels):
+    def __init__(self, img_channels, n_steps):
         super().__init__()
         self.input = nn.Conv2d(img_channels, 64, 3, padding=1)
 
@@ -75,7 +75,7 @@ class UNet(nn.Module):
 
         self.output = nn.Conv2d(64, img_channels, 3, padding=1)
 
-        self.embedding = self.sinusoidal_embeddings().to(device)
+        self.embedding = self.sinusoidal_embeddings(n_steps).to(device)
 
     def forward(self, x, t):
         t = self.embedding[t]
@@ -107,7 +107,7 @@ class UNet(nn.Module):
 
         return x
     
-    def sinusoidal_embeddings(self, t=1000, emb_dim=256):
+    def sinusoidal_embeddings(self, t, emb_dim=256):
         denom = 10000 ** (torch.arange(0, emb_dim, 2).float() / emb_dim)
         positions = torch.arange(0, t).float().unsqueeze(1)
         embeddings = torch.zeros(t, emb_dim)

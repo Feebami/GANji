@@ -37,15 +37,16 @@ class Dataset(Dataset):
         return self.h_flip(self.data[idx])
     
 class DDPM(L.LightningModule):
-    def __init__(self):
+    def __init__(self, n_steps=1000):
         super().__init__()
-        self.beta = self._cosine_beta().to(device)
+        self.n_steps = n_steps
+        self.beta = self._cosine_beta(n_steps).to(device)
         self.alpha = 1. - self.beta
         self.alpha_cumprod = torch.cumprod(self.alpha, 0)
         self.sqrt_alpha_cumprod = torch.sqrt(self.alpha_cumprod)
         self.sqrt_1m_alpha_cumprod = torch.sqrt(1. - self.alpha_cumprod)
 
-        self.model = unet.UNet(img_channels)
+        self.model = unet.UNet(img_channels, n_steps)
 
     def _cosine_beta(self, n_steps=1000, s=8e-3):
         timesteps = torch.arange(n_steps+1, dtype=torch.float32) / n_steps + s
@@ -64,7 +65,7 @@ class DDPM(L.LightningModule):
 
     def training_step(self, batch, batch_idx):
         x = batch
-        t = torch.randint(0, 1000, (x.size(0),), device=device)
+        t = torch.randint(0, self.n_steps, (x.size(0),), device=device)
         x_t, noise = self.add_noise(x, t)
         noise_hat = self.model(x_t, t)
         loss = F.mse_loss(noise_hat, noise)
@@ -72,7 +73,7 @@ class DDPM(L.LightningModule):
         return loss
     
     def configure_optimizers(self):
-        optimizer = Adam(self.model.parameters(), lr=1e-4)
+        optimizer = Adam(self.model.parameters(), lr=5e-5)
         scheduler = lr_scheduler.CosineAnnealingLR(optimizer, 100)
         return {
             'optimizer': optimizer,
@@ -86,17 +87,17 @@ class DDPM(L.LightningModule):
         self.model.eval()
         with torch.no_grad():
             x = torch.randn(n, img_channels, 64, 64, device=device)
-            for i in reversed(range(1000)):
+            for i in reversed(range(self.n_steps)):
                 t = torch.full((n,), i, device=device)
                 alpha = self.alpha[t].view(-1, 1, 1, 1)
                 sqrt_1m_alpha_cumprod = self.sqrt_1m_alpha_cumprod[t].view(-1, 1, 1, 1)
                 beta = self.beta[t].view(-1, 1, 1, 1)
-                noise_cumprod = self.model(x, t)
+                noise_hat = self.model(x, t)
                 if i > 0:
                     noise = torch.randn_like(x)
                 else:
                     noise = torch.zeros_like(x)
-                x = (x - (beta/sqrt_1m_alpha_cumprod) * noise_cumprod) / torch.sqrt(alpha) + torch.sqrt(beta) * noise
+                x = (x - (beta/sqrt_1m_alpha_cumprod) * noise_hat) / torch.sqrt(alpha) + torch.sqrt(beta) * noise
             return x
         
     def on_train_epoch_end(self):
@@ -137,7 +138,7 @@ if __name__ == '__main__':
         pin_memory=True
     )
     
-    unet = DDPM()
+    unet = DDPM(1024)
     trainer = L.Trainer(
         max_epochs=100,
         default_root_dir='ddpm_logs',
