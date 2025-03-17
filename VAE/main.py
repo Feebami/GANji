@@ -20,7 +20,7 @@ import variational_autoencoder
 parser = argparse.ArgumentParser(description='Train a variational autoencoder on Kanji characters')
 parser.add_argument('--batch_size', type=int, default=128, help='The batch size for training')
 parser.add_argument('--epochs', type=int, default=100, help='The number of epochs to train for')
-parser.add_argument('--latent_dim', type=int, default=64, help='The dimension of the latent space')
+parser.add_argument('--latent_dim', type=int, default=128, help='The dimension of the latent space')
 parser.add_argument('--lr', type=float, default=1e-3, help='The learning rate for training')
 parser.add_argument('--save_dir', type=str, default='vae', help='The directory to save the model and logs')
 parser.add_argument('--sample_every', type=int, default=4, help='The number of epochs between sampling')

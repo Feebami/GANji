@@ -13,3 +13,7 @@ fairface/
 /gan_resnet_spectralnorm_samples
 /vae_resnet_dim64
 /vae_resnet_dim64_samples
+/vae_resnet_dim64_score_imgs
+/vae_resnet_dim128
+/vae_resnet_dim128_samples
+/vae_resnet_dim128_score_imgs
