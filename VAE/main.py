@@ -3,6 +3,7 @@ import argparse
 import os
 from PIL import Image
 
+from cleanfid import fid
 import lightning as L
 import torch
 from torch.optim import Adam
@@ -11,18 +12,18 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
 import torchvision
 from torchvision.transforms import v2
-import tqdm
+from tqdm import tqdm
 
 import resnet_vae
 import variational_autoencoder
 
 parser = argparse.ArgumentParser(description='Train a variational autoencoder on Kanji characters')
-parser.add_argument('--batch_size', type=int, default=256, help='The batch size for training')
+parser.add_argument('--batch_size', type=int, default=128, help='The batch size for training')
 parser.add_argument('--epochs', type=int, default=100, help='The number of epochs to train for')
-parser.add_argument('--latent_dim', type=int, default=128, help='The dimension of the latent space')
+parser.add_argument('--latent_dim', type=int, default=64, help='The dimension of the latent space')
 parser.add_argument('--lr', type=float, default=1e-3, help='The learning rate for training')
 parser.add_argument('--save_dir', type=str, default='vae', help='The directory to save the model and logs')
-parser.add_argument('--sample_every', type=int, default=5, help='The number of epochs between sampling')
+parser.add_argument('--sample_every', type=int, default=4, help='The number of epochs between sampling')
 parser.add_argument('--model', type=str, default='resnet', help='The model architecture to use (resnet or conv)')
 args = parser.parse_args()
 
@@ -35,7 +36,7 @@ class KanjiDataset(Dataset):
         self.transform = transform
         self.h_flip = v2.RandomHorizontalFlip()
         self.data = []
-        for i, file in tqdm.tqdm(enumerate(os.listdir(root)), desc='Loading images'):
+        for i, file in tqdm(enumerate(os.listdir(root)), desc='Loading images'):
             img = Image.open(os.path.join(root, file))
             self.data.append(img)
         if transform:
@@ -99,7 +100,7 @@ class VAE(L.LightningModule):
             return self.decoder(z)
     
     def on_train_epoch_end(self):
-        if (self.current_epoch+1) % args.sample_every == 0:
+        if self.current_epoch % args.sample_every == 0:
             samples = torch.sigmoid(self.sample())
             grid = torchvision.utils.make_grid(samples, nrow=3)
             grid = 255 - grid * 255
@@ -108,9 +109,29 @@ class VAE(L.LightningModule):
             os.makedirs(f'{args.save_dir}_{args.model}_dim{args.latent_dim}_samples', exist_ok=True)
             img.save(f'{args.save_dir}_{args.model}_dim{args.latent_dim}_samples/sample_{self.current_epoch}.png')
 
+    def on_fit_end(self):
+        self.decoder.eval()
+        self.decoder.to(device)
+        gen_dir = f'{args.save_dir}_{args.model}_dim{args.latent_dim}_score_imgs'
+        os.makedirs(gen_dir, exist_ok=True)
+        with torch.no_grad():
+            for i in tqdm(range(81)):
+                z = torch.randn(args.batch_size, args.latent_dim, device=device)
+                samples = self.decoder(z)
+                samples = torch.sigmoid(samples)
+                samples = 255 - samples * 255
+                samples = v2.Resize((48, 48))(samples)
+                samples = samples.type(torch.uint8).cpu().numpy().transpose(0, 2, 3, 1)
+                for j in range(samples.shape[0]):
+                    img = Image.fromarray(samples[j].squeeze(), mode='L')
+                    img.save(os.path.join(gen_dir, f'sample_{i * args.batch_size + j}.png'))
+            fid_score = fid.compute_fid(gen_dir, 'kanji', device=device)
+            print(f'FID score: {fid_score}')
+
 if __name__ == '__main__':
 
     transform = v2.Compose([
+        v2.Resize((64, 64)),
         v2.ToImage(),
         v2.ToDtype(torch.float32, scale=True),
     ])
@@ -129,7 +150,7 @@ if __name__ == '__main__':
     trainer = L.Trainer(
         max_epochs=args.epochs,
         precision='bf16-mixed',
-        default_root_dir=f'{args.save_dir}_{args.model}_dim{args.latent_dim}_{args.epochs}',
+        default_root_dir=f'{args.save_dir}_{args.model}_dim{args.latent_dim}',
     )
 
     trainer.fit(vae, dataloader)

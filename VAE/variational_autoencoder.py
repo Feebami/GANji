@@ -9,7 +9,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 class Encoder(nn.Module):
     def __init__(self, latent_dim, filter_list=[32, 64, 128]):
         super().__init__()
-        final_size = int(48 * 2**-len(filter_list))
+        final_size = int(64 * 2**-len(filter_list))
         self.conv_block = nn.ModuleList()
         for i, filters in enumerate(filter_list):
             if i == 0:
@@ -34,7 +34,7 @@ class Encoder(nn.Module):
 class Decoder(nn.Module):
     def __init__(self, latent_dim=32, filter_list=[128, 64, 32]):
         super().__init__()
-        final_size = int(48 * 2**-len(filter_list))
+        final_size = int(64 * 2**-len(filter_list))
         self.fc = nn.Linear(latent_dim, filter_list[0] * final_size**2)
         self.unflatten = nn.Unflatten(1, (filter_list[0], final_size, final_size))
         self.conv_block = nn.ModuleList()

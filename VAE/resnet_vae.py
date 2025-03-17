@@ -69,21 +69,22 @@ class DecoderBlock(nn.Module):
 class Encoder(nn.Module):
     def __init__(self, latent_dim=32):
         super().__init__()
+        self.final_size = 64 // 2**4
         self.input1 = nn.Conv2d(1, 64, 3, padding=1, bias=False)
         self.bn = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
         self.resnet = nn.Sequential(
-            EncoderBlock(64, 64, stride=2), # 24x24x64
+            EncoderBlock(64, 64, stride=2), 
             EncoderBlock(64, 128),
-            EncoderBlock(128, 128, stride=2), # 12x12x128
+            EncoderBlock(128, 128, stride=2), 
             EncoderBlock(128, 256),
-            EncoderBlock(256, 256, stride=2), # 6x6x256
+            EncoderBlock(256, 256, stride=2), 
             EncoderBlock(256, 512),
-            EncoderBlock(512, 512, stride=2), # 3x3x512
+            EncoderBlock(512, 512, stride=2), 
         )
         self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(512 * 3 * 3, latent_dim)
-        self.fc2 = nn.Linear(512 * 3 * 3, latent_dim)
+        self.fc1 = nn.Linear(512 * self.final_size**2, latent_dim)
+        self.fc2 = nn.Linear(512 * self.final_size**2, latent_dim)
 
     def forward(self, x):
         x = self.input1(x)
@@ -98,8 +99,9 @@ class Encoder(nn.Module):
 class Decoder(nn.Module):
     def __init__(self, latent_dim=32):
         super().__init__()
-        self.fc = nn.Linear(latent_dim, 512 * 3 * 3)
-        self.unflatten = nn.Unflatten(1, (512, 3, 3))
+        self.init_size = 64 // 2**4
+        self.fc = nn.Linear(latent_dim, 512 * self.init_size**2)
+        self.unflatten = nn.Unflatten(1, (512, self.init_size, self.init_size))
         self.conv_block = nn.Sequential(
             DecoderBlock(512, 512, stride=2), # 6x6x512
             DecoderBlock(512, 256),

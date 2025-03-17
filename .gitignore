@@ -3,23 +3,13 @@ kanji/
 cifar/
 mnist/
 fairface/
-vae_conv_dim256_100/
-vae_conv_samples/
-vae_resnet_dim256_100/
-vae_resnet_samples/
-gan_resnet_samples/
-joe.png
-yui.png
-/gan_resnet_kanji_dim128_layers\[512, 256, 128\]
 /ddpm_logs
 /ddpm_samples
-/gan_resnet_kanji_dim128_layers\[256, 128, 64, 32\]
-/gan_resnet_kanji_samples
-/vae_resnet_dim256_samples
-/vae_resnet_dim512_100
-/gan_resnet_spectralnorm_samples
-/vae_resnet_dim128_100
-/vae_resnet_dim128_samples
-/vae_resnet_dim512_samples
 /ddpm_1000steps_samples
 /ddpm_2000steps_samples
+/gan_resnet_kanji_dim128_layers\[256, 128, 64, 32\]
+/gan_resnet_kanji_dim128_layers\[512, 256, 128\]
+/gan_resnet_kanji_samples
+/gan_resnet_spectralnorm_samples
+/vae_resnet_dim64
+/vae_resnet_dim64_samples
