@@ -20,7 +20,7 @@ import variational_autoencoder
 parser = argparse.ArgumentParser(description='Train a variational autoencoder on Kanji characters')
 parser.add_argument('--batch_size', type=int, default=128, help='The batch size for training')
 parser.add_argument('--epochs', type=int, default=100, help='The number of epochs to train for')
-parser.add_argument('--latent_dim', type=int, default=128, help='The dimension of the latent space')
+parser.add_argument('--latent_dim', type=int, default=256, help='The dimension of the latent space')
 parser.add_argument('--lr', type=float, default=1e-3, help='The learning rate for training')
 parser.add_argument('--save_dir', type=str, default='vae', help='The directory to save the model and logs')
 parser.add_argument('--sample_every', type=int, default=4, help='The number of epochs between sampling')
@@ -34,7 +34,6 @@ class KanjiDataset(Dataset):
     def __init__(self, root, transform=None):
         self.root = root
         self.transform = transform
-        self.h_flip = v2.RandomHorizontalFlip()
         self.data = []
         for i, file in tqdm(enumerate(os.listdir(root)), desc='Loading images'):
             img = Image.open(os.path.join(root, file))
@@ -48,7 +47,7 @@ class KanjiDataset(Dataset):
         return len(self.data)
     
     def __getitem__(self, idx):
-        return self.h_flip(self.data[idx])
+        return self.data[idx]
     
 class VAE(L.LightningModule):
     def __init__(self):
