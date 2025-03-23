@@ -1,6 +1,6 @@
 # GANji: real looking fake kanji
 ## Description
-This project's purpose was to explore various AI image generation techniques' ability to recreate Japanese/Chinese Kanji. The methods tried were a Variational AutoEncoder, a Generative Adversarial Network, and a Denoising Diffusion Probabilistic Model. Each of these techniques was used to train various models on a dataset of about 10,000 images of standard font Kanji. 
+This project's purpose was to explore various AI image generation techniques' ability to recreate Japanese Kanji/Chinese Characters. The methods tried were a Variational AutoEncoder, a Generative Adversarial Network, and a Denoising Diffusion Probabilistic Model. Each of these techniques was used to train various models on a dataset of about 10,000 images of standard font Kanji. 
 ## Table of Contents
 - [Motivation](#motivation)
 - [Datasets](#datasets)
