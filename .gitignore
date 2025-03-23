@@ -20,3 +20,11 @@ fairface/
 /vae_resnet_dim256
 /vae_resnet_dim256_samples
 /vae_resnet_dim256_score_imgs
+/gan_resnet_hinge_kanji_samples
+/gan_resnet_hinge_score_imgs
+/gan_resnet_kanji_hinge_layers\[256, 128, 64\]
+/gan_resnet_kanji_hinge_layers\[512, 256, 128, 64\]
+/gan_resnet_kanji_hinge_layers\[512, 256, 128\]
+/gan_resnet_kanji_wasserstein_layers\[512, 256, 128, 64\]
+/gan_resnet_wasserstein_kanji_samples
+/gan_resnet_wasserstein_score_imgs

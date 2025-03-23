@@ -1,7 +1,6 @@
 # Import necessary libraries and modules
 import torch
 import torch.nn as nn
-from torch.nn.utils import spectral_norm
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -32,16 +31,16 @@ class DisBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride=2):
         super().__init__()
         self.block = nn.Sequential(
-            spectral_norm(nn.Conv2d(in_channels, out_channels, 3, stride, padding=1)),
+            nn.Conv2d(in_channels, out_channels, 3, stride, padding=1),
             nn.LeakyReLU(0.2, inplace=True),
-            spectral_norm(nn.Conv2d(out_channels, out_channels, 3, stride=1, padding=1)),
+            nn.Conv2d(out_channels, out_channels, 3, stride=1, padding=1),
             nn.LeakyReLU(0.2, inplace=True),
         )
 
         self.shortcut = nn.Sequential()
         if stride != 1 or in_channels != out_channels:
             self.shortcut = nn.Sequential(
-                spectral_norm(nn.Conv2d(in_channels, out_channels, 1, stride)),
+                nn.Conv2d(in_channels, out_channels, 1, stride),
             )
 
     def forward(self, x):

@@ -2,7 +2,9 @@
 import argparse
 import os
 from PIL import Image
+import time
 
+from cleanfid import fid
 import lightning as L
 import torch
 from torch.optim import Adam
@@ -10,7 +12,7 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
 import torchvision
 from torchvision.transforms import v2
-import tqdm
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Train a generative adversarial network on Kanji characters')
 parser.add_argument('--batch_size', type=int, default=128, help='The batch size for training')
@@ -18,12 +20,12 @@ parser.add_argument('--epochs', type=int, default=100, help='The number of epoch
 parser.add_argument('--latent_dim', type=int, default=128, help='The dimension of the latent space')
 parser.add_argument('--lr', type=float, default=1e-4, help='The learning rate for training')
 parser.add_argument('--save_dir', type=str, default='gan', help='The directory to save the model and logs')
-parser.add_argument('--sample_every', type=int, default=2, help='The number of epochs between sampling')
+parser.add_argument('--sample_every', type=int, default=4, help='The number of epochs between sampling')
 parser.add_argument('--model', type=str, default='resnet', choices=['resnet', 'conv'], help='The model architecture to use (resnet or conv)')
-parser.add_argument('--loss', type=str, default='hinge', choices=['hinge', 'wasserstein', 'BCE'], help='The loss function to use (BCE, hinge, or wasserstein)')
+parser.add_argument('--loss', type=str, default='wasserstein', choices=['hinge', 'wasserstein', 'BCE'], help='The loss function to use (BCE, hinge, or wasserstein)')
 parser.add_argument('--disc_ratio', type=int, default=5, help='The number of times to train the discriminator per generator step')
 parser.add_argument('--gp', type=float, default=10, help='The gradient penalty coefficient')
-parser.add_argument('--layers', nargs='+', type=int, default=[512, 256, 128], help='The number of channels in each layer of the generator')
+parser.add_argument('--layers', nargs='+', type=int, default=[512, 256, 128, 64], help='The number of channels in each layer of the generator')
 parser.add_argument('--data', type=str, default='kanji', choices=['kanji', 'cifar', 'mnist'], help='Choose the dataset to use')
 args = parser.parse_args()
 
@@ -40,9 +42,8 @@ class Dataset(Dataset):
     def __init__(self, root, transform=None):
         self.root = root
         self.transform = transform
-        self.h_flip = v2.RandomHorizontalFlip()
         self.data = []
-        for file in tqdm.tqdm(os.listdir(root)):
+        for file in tqdm(os.listdir(root)):
             img = Image.open(os.path.join(root, file))
             if self.transform:
                 img = self.transform(img)
@@ -53,14 +54,14 @@ class Dataset(Dataset):
         return len(self.data)
     
     def __getitem__(self, idx):
-        return self.h_flip(self.data[idx])
+        return self.data[idx]
 
 class GAN(L.LightningModule):
     def __init__(self, img_channels):
         super().__init__()
         self.automatic_optimization = False
         self.generator = gan.Generator(args.latent_dim, args.layers, img_channels)
-        self.discriminator = gan.Discriminator(args.layers[::-1], img_channels)
+        self.discriminator = gan.Discriminator(args.layers[-2::-1], img_channels)
 
         if args.loss == 'hinge':
             self.d_loss_fn = self._hinge_loss
@@ -115,6 +116,11 @@ class GAN(L.LightningModule):
             self.manual_backward(d_loss)
             opt_d.step()
 
+            d_acc = ((real_pred > 0).float().mean() + (fake_pred < 0).float().mean()) / 2
+            # Stop training if the discriminator is too good
+            if d_acc > 0.9:
+                break
+
         # Train the generator
         opt_g.zero_grad()
         opt_d.zero_grad()
@@ -128,7 +134,7 @@ class GAN(L.LightningModule):
         self.manual_backward(g_loss)
         opt_g.step()
 
-        self.log_dict({'d_loss': d_loss, 'g_loss': g_loss}, prog_bar=True)
+        self.log_dict({'d_loss': d_loss, 'g_loss': g_loss, 'd_acc': d_acc}, prog_bar=True)
 
     def configure_optimizers(self):
         lr = args.lr
@@ -143,14 +149,36 @@ class GAN(L.LightningModule):
             return self(latent)
         
     def on_train_epoch_end(self):
-        if (self.current_epoch+1) % args.sample_every == 0:
+        if self.current_epoch % args.sample_every == 0:
+            sample_dir = f'{args.save_dir}_{args.model}_{args.loss}_{args.data}_samples'
+            os.makedirs(sample_dir, exist_ok=True)
             samples = self.sample() * 0.5 + 0.5
             grid = torchvision.utils.make_grid(samples, nrow=3, normalize=True)
             grid = grid * 255
             grid = grid.type(torch.uint8).cpu().numpy().transpose(1,2,0).squeeze()
             img = Image.fromarray(grid, mode='RGB')
-            os.makedirs(f'{args.save_dir}_{args.model}_spectralnorm_samples', exist_ok=True)
-            img.save(f'{args.save_dir}_{args.model}_spectralnorm_samples/sample_{self.current_epoch}.png')
+            img.save(os.path.join(sample_dir, f'sample_{self.current_epoch}.png'))
+
+    def on_fit_end(self):
+        if args.data == 'kanji':
+            self.generator.eval()
+            self.generator.to(device)
+            gen_dir = f'{args.save_dir}_{args.model}_{args.loss}_score_imgs'
+            os.makedirs(gen_dir, exist_ok=True)
+            with torch.no_grad():
+                for i in tqdm(range(81)):
+                    z = torch.randn(args.batch_size, args.latent_dim, device=device)
+                    samples = self(z)
+                    samples = samples * 0.5 + 0.5
+                    samples = torch.clamp(samples, 0, 1)
+                    samples = 255 - samples * 255
+                    samples = v2.Resize((48, 48))(samples)
+                    samples = samples.type(torch.uint8).cpu().numpy().transpose(0, 2, 3, 1)
+                    for j in range(samples.shape[0]):
+                        img = Image.fromarray(samples[j].squeeze(), mode='L')
+                        img.save(os.path.join(gen_dir, f'sample_{i * args.batch_size + j}.png'))
+                fid_score = fid.compute_fid(gen_dir, 'kanji', device=device)
+                print(f'FID score: {fid_score}')
 
 if __name__ == '__main__':
         
@@ -186,7 +214,10 @@ if __name__ == '__main__':
     trainer = L.Trainer(
         max_epochs=args.epochs,
         # precision='bf16-mixed',
-        default_root_dir=f'{args.save_dir}_{args.model}_{args.data}_dim{args.latent_dim}_layers{args.layers}',
+        default_root_dir=f'{args.save_dir}_{args.model}_{args.data}_{args.loss}_layers{args.layers}',
     )
-
+    start_time = time.time()
     trainer.fit(gan, dataloader)
+    end_time = time.time()
+    total_time = end_time - start_time
+    print(f"Total training time: {total_time:.2f} seconds")
