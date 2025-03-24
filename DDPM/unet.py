@@ -54,7 +54,7 @@ class TripletAttention(nn.Module):
         return (cw_atten + hc_atten + hw_atten) / 3
     
 class UNet(nn.Module):
-    def __init__(self, img_channels, n_steps):
+    def __init__(self, img_channels, n_steps, attention):
         super().__init__()
         self.input = nn.Conv2d(img_channels, 64, 3, padding=1)
 
@@ -66,11 +66,11 @@ class UNet(nn.Module):
         self.bottleneck2 = Block(512, 512)
         self.bottleneck3 = Block(512, 256)
 
-        # self.attn1 = TripletAttention()
+        self.attn1 = TripletAttention() if attention else nn.Identity()
         self.up1 = Block(512, 128)
-        # self.attn2 = TripletAttention()
+        self.attn2 = TripletAttention() if attention else nn.Identity()
         self.up2 = Block(256, 64)
-        # self.attn3 = TripletAttention()
+        self.attn3 = TripletAttention() if attention else nn.Identity()
         self.up3 = Block(128, 64)
 
         self.output = nn.Conv2d(64, img_channels, 3, padding=1)
@@ -92,15 +92,15 @@ class UNet(nn.Module):
         x = self.bottleneck3(x, t) # 256x8x8
 
         x = F.interpolate(x, scale_factor=2, mode='bilinear', align_corners=True) # 256x16x16
-        # x3 = self.attn1(x3)
+        x3 = self.attn1(x3)
         x = torch.cat([x, x3], dim=1) # 512x16x16
         x = self.up1(x, t) # 128x16x16
         x = F.interpolate(x, scale_factor=2, mode='bilinear', align_corners=True) # 128x32x32
-        # x2 = self.attn2(x2)
+        x2 = self.attn2(x2)
         x = torch.cat([x, x2], dim=1) # 256x32x32
         x = self.up2(x, t) # 64x32x32
         x = F.interpolate(x, scale_factor=2, mode='bilinear', align_corners=True) # 64x64x64
-        # x1 = self.attn3(x1)
+        x1 = self.attn3(x1)
         x = torch.cat([x, x1], dim=1) # 128x64x64
         x = self.up3(x, t) # 64x64x64
         x = self.output(x) # img_channelsx64x64

@@ -28,3 +28,8 @@ fairface/
 /gan_resnet_kanji_wasserstein_layers\[512, 256, 128, 64\]
 /gan_resnet_wasserstein_kanji_samples
 /gan_resnet_wasserstein_score_imgs
+/gan_resnet_BCE_kanji_samples
+/gan_resnet_BCE_score_imgs
+/gan_resnet_kanji_BCE_layers\[512, 256, 128, 64\]
+/ddpm_cosinebetaFalse_attentionFalse_score_imgs
+/ddpm_cosinebetaFalse_attentionFalse_samples
