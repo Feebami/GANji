@@ -33,3 +33,9 @@ fairface/
 /gan_resnet_kanji_BCE_layers\[512, 256, 128, 64\]
 /ddpm_cosinebetaFalse_attentionFalse_score_imgs
 /ddpm_cosinebetaFalse_attentionFalse_samples
+/ddpm_cosinebetaFalse_attentionTrue_samples
+/ddpm_cosinebetaFalse_attentionTrue_score_imgs
+/ddpm_cosinebetaTrue_attentionFalse_samples
+/ddpm_cosinebetaTrue_attentionFalse_score_imgs
+/ddpm_cosinebetaTrue_attentionTrue_samples
+/ddpm_cosinebetaTrue_attentionTrue_score_imgs
