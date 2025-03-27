@@ -295,21 +295,24 @@ Additionally, switching from a linear beta schedule to a cosine beta schedule fo
 
 Inspired by an example repository I was referencing, I attempted to enhance the model by incorporating triplet attention mechanisms between each block in the U-Net. While implementing this feature was an interesting exercise, it did not result in noticeable improvements to the model's performance. 
 
-Despite the DDPM's larger and deeper architecture compared to the GAN, training was significantly faster, and improvements were easier to iterate. 
+Despite the DDPM's larger and deeper architecture compared to the GAN, training was significantly faster, and improvements were easier to iterate.
+
+##### DDPM Addendum
+After returning to the DDPM to produce FID scores, there was an issue found in the post processing that produced noise like artifacts in the sampled images. 
 
 #### Results
 <table>
   <tr>
     <td align="center"><img src="display_imgs/DDPM_epoch1.png" alt="DDPM epoch 1" width="200"/></td>
-    <td align="center"><img src="display_imgs/DDPM_epoch5.png" alt="DDPM epoch 5" width="200"/></td>
-    <td align="center"><img src="display_imgs/DDPM_epoch25.png" alt="DDPM epoch 25" width="200"/></td>
-    <td align="center"><img src="display_imgs/DDPM_epoch100.png" alt="DDPM epoch 100" width="200"/></td>
+    <td align="center"><img src="display_imgs/DDPM_epoch4.png" alt="DDPM epoch 4" width="200"/></td>
+    <td align="center"><img src="display_imgs/DDPM_epoch24.png" alt="DDPM epoch 24" width="200"/></td>
+    <td align="center"><img src="display_imgs/DDPM_epoch100.png" alt="DDPM epoch 96" width="200"/></td>
   </tr>
   <tr>
     <td align="center"><em>DDPM epoch 1</em></td>
-    <td align="center"><em>DDPM epoch 5</em></td>
-    <td align="center"><em>DDPM epoch 25</em></td>
-    <td align="center"><em>DDPM epoch 100</em></td>
+    <td align="center"><em>DDPM epoch 4</em></td>
+    <td align="center"><em>DDPM epoch 24</em></td>
+    <td align="center"><em>DDPM epoch 96</em></td>
   </tr>
 </table>
 
