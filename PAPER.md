@@ -298,7 +298,9 @@ Inspired by an example repository I was referencing, I attempted to enhance the 
 Despite the DDPM's larger and deeper architecture compared to the GAN, training was significantly faster, and improvements were easier to iterate.
 
 ##### DDPM Addendum
-After returning to the DDPM to produce FID scores, there was an issue found in the post processing that produced noise like artifacts in the sampled images. 
+After returning to the DDPM to produce FID scores, there was an issue found in the post processing that produced noise like artifacts in the sampled images. Due to the DDPM predicting noise rather than the pixel values themselves, the sampled values were not contained in the range of [-1, 1]. When a value exceeded this range, and went through the post processing steps, particularly casting to uint8, the resulting values were transformed to the other end of the pixel value range. For example, when values below 0 were cast to uint8, they were transformed close to 255. When a clamp operation was introduced, it alleviated the issue and produced much cleaner images as seen below. 
+
+This issue was not obvious for me to detect and it resulted in much troubleshooting to resolve the artifacts. I thought it had something to do with the model as the image samples appeared to have left over noise from the denoising process. Through troubleshooting I was able to learn new techniques that I may not have otherwise, like implementing a cosine beta schedule and testing of self attention mechanisms.
 
 #### Results
 <table>
@@ -306,7 +308,7 @@ After returning to the DDPM to produce FID scores, there was an issue found in t
     <td align="center"><img src="display_imgs/DDPM_epoch1.png" alt="DDPM epoch 1" width="200"/></td>
     <td align="center"><img src="display_imgs/DDPM_epoch4.png" alt="DDPM epoch 4" width="200"/></td>
     <td align="center"><img src="display_imgs/DDPM_epoch24.png" alt="DDPM epoch 24" width="200"/></td>
-    <td align="center"><img src="display_imgs/DDPM_epoch100.png" alt="DDPM epoch 96" width="200"/></td>
+    <td align="center"><img src="display_imgs/DDPM_epoch96.png" alt="DDPM epoch 96" width="200"/></td>
   </tr>
   <tr>
     <td align="center"><em>DDPM epoch 1</em></td>
