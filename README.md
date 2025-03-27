@@ -95,9 +95,9 @@ To adjust hyperparameters (e.g., learning rate, diffusion steps), you will need 
 |:-----------------------------:|:-----------------------------:|:-----------------------------:|:-----------------------------:|
 | *GAN epoch 1* | *GAN epoch 5* | *GAN epoch 25* | *GAN epoch 100* |
 ### DDPM
-| ![DDPM epoch 1](display_imgs/DDPM_epoch1.png) | ![DDPM epoch 5](display_imgs/DDPM_epoch5.png) | ![DDPM epoch 20](display_imgs/DDPM_epoch25.png) | ![DDPM epoch 100](display_imgs/DDPM_epoch100.png) |
+| ![DDPM epoch 1](display_imgs/DDPM_epoch1.png) | ![DDPM epoch 4](display_imgs/DDPM_epoch4.png) | ![DDPM epoch 24](display_imgs/DDPM_epoch24.png) | ![DDPM epoch 100](display_imgs/DDPM_epoch96.png) |
 |:-----------------------------:|:-----------------------------:|:-----------------------------:|:-----------------------------:|
-| *DDPM epoch 1* | *DDPM epoch 5* | *DDPM epoch 25* | *DDPM epoch 100* |
+| *DDPM epoch 1* | *DDPM epoch 4* | *DDPM epoch 24* | *DDPM epoch 96* |
 ## Credits
 GAN related repositories:
 
