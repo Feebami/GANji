@@ -88,7 +88,7 @@ class DDPM(L.LightningModule):
         return loss
     
     def configure_optimizers(self):
-        optimizer = Adam(self.model.parameters(), lr=5e-5)
+        optimizer = Adam(self.model.parameters(), lr=args.lr)
         scheduler = lr_scheduler.CosineAnnealingLR(optimizer, 100)
         return {
             'optimizer': optimizer,

@@ -22,7 +22,7 @@ parser.add_argument('--lr', type=float, default=1e-4, help='The learning rate fo
 parser.add_argument('--save_dir', type=str, default='gan', help='The directory to save the model and logs')
 parser.add_argument('--sample_every', type=int, default=4, help='The number of epochs between sampling')
 parser.add_argument('--model', type=str, default='resnet', choices=['resnet', 'conv'], help='The model architecture to use (resnet or conv)')
-parser.add_argument('--loss', type=str, default='BCE', choices=['hinge', 'wasserstein', 'BCE'], help='The loss function to use (BCE, hinge, or wasserstein)')
+parser.add_argument('--loss', type=str, default='hinge', choices=['hinge', 'wasserstein', 'BCE'], help='The loss function to use (BCE, hinge, or wasserstein)')
 parser.add_argument('--disc_ratio', type=int, default=5, help='The number of times to train the discriminator per generator step')
 parser.add_argument('--gp', type=float, default=10, help='The gradient penalty coefficient')
 parser.add_argument('--layers', nargs='+', type=int, default=[512, 256, 128, 64], help='The number of channels in each layer of the generator')

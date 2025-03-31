@@ -39,3 +39,5 @@ fairface/
 /ddpm_cosinebetaTrue_attentionFalse_score_imgs
 /ddpm_cosinebetaTrue_attentionTrue_samples
 /ddpm_cosinebetaTrue_attentionTrue_score_imgs
+/paper_figs
+sample_images.py

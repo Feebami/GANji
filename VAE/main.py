@@ -2,6 +2,7 @@
 import argparse
 import os
 from PIL import Image
+import time
 
 from cleanfid import fid
 import lightning as L
@@ -152,4 +153,7 @@ if __name__ == '__main__':
         default_root_dir=f'{args.save_dir}_{args.model}_dim{args.latent_dim}',
     )
 
+    start_time = time.time()
     trainer.fit(vae, dataloader)
+    end_time = time.time()
+    print(f'Training time: {end_time - start_time:.2f} seconds')
