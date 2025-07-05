@@ -7,7 +7,7 @@ class SelfAttention(nn.Module):
         self.channels = channels
         
         self.norm = nn.GroupNorm(8, channels)
-        self.mha = nn.MultiheadAttention(channels, 4)
+        self.mha = nn.MultiheadAttention(channels, 4, batch_first=True)
         self.qkv = nn.Conv2d(channels, channels * 3, 1)
         self.out = nn.Conv2d(channels, channels, 1)
 
