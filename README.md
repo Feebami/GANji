@@ -116,4 +116,4 @@ Triplet Attention:
 - [triplet-attention](https://github.com/landskape-ai/triplet-attention/tree/f07524e45db5eea1357c50316f30ab99a292d2f9)
 
 ## Further Reading
-For a detailed exploration of the project, including the methodology, architecture design, training processes, experiments conducted, and lessons learned, please read the accompanying paper, ["GANji: Real Looking Fake Kanji"](https://feebami.github.io/GANji/PAPER.html). The paper, hosted on GitHub Pages within this repository, is written as a mix of a research article and blog post to make the technical details approachable yet thorough. Additionally, there is an academic paper [here](https://github.com/Feebami/GANji/blob/main/GANji_paper.pdf).
+For a detailed exploration of the project, including the methodology, architecture design, training processes, experiments conducted, and lessons learned, please read the accompanying paper, ["GANji: Real Looking Fake Kanji"](https://feebami.github.io/GANji/PAPER.html). The paper, hosted on GitHub Pages within this repository, is written as a mix of a research article and blog post to make the technical details approachable yet thorough. 
